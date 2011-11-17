@@ -1,0 +1,34 @@
+.form table {
+	padding-bottom: 1em;
+	text-align: left;
+}
+
+input[type="text"] {
+	width: 100%;
+	padding: 0.25em;
+}
+
+input[type="password"] {
+	width: 100%;
+	padding: 0.25em
+}
+
+#err_txt {
+	background-color: #FCC;
+	border: 1px solid #D77;
+	padding: 0.25em;
+	margin: 2em 0;
+}
+
+h1 {
+	text-align: center;
+}
+
+body {
+	text-align: center;
+}
+
+table {
+	margin-left: auto;
+	margin-right: auto;
+}
