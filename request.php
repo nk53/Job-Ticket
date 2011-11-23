@@ -1,6 +1,22 @@
 <?php
+require_once('Request.php');
 include('check_cookie.php');
 if (check_cookie($_SERVER['PHP_SELF'], null)) {
+  if (!empty($_POST)) {
+    $req = new Request();
+    $req->name = $_POST['name'];
+    // Remove '-' from phone number.
+    $req->phone = str_replace('-', '',$_POST['phone']);
+    $req->description = $_POST['description'];
+    // Force date into correct format.
+    $day = $_POST['day'];
+    $month = $_POST['month'];
+    $year = $_POST['year'];
+    $time = strtotime("$day $month $year");
+    $req->deadline = date('Y-m-d');
+    $req->insert();
+    header('Location: index.php?conf=true');
+  }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -21,8 +37,12 @@ if (check_cookie($_SERVER['PHP_SELF'], null)) {
 <div class="form">
   <h1>Job Request Form</h1>
   <table border="0">
-    <tr><td>Name:</td><td><input disabled type="text" id="name" /></td></tr>
-    <tr><td>Phone #:</td><td><input type="text" id="phone" /></td></tr>
+    <tr><td>Name:</td>
+      <td><input  type="text" id="name" name="name" readonly="readonly" /></td>
+    </tr>
+    <tr><td>Phone #:</td>
+      <td><input type="text" id="phone" name="phone" /></td>
+    </tr>
     <tr><td>Job Deadline:</td><td><select id="year" name="year"></select>
     <select id="month" name="month">
       <option id="month_0" value="January">January</option>
@@ -39,7 +59,11 @@ if (check_cookie($_SERVER['PHP_SELF'], null)) {
       <option id="month_11" value="December">December</option>
     </select>
     <select id="day" name="day"></select></td></tr>
-    <tr><td>Job Description:</td><td><textarea id="description" rows="10" cols="40"></textarea></td></tr>
+    <tr><td>Job Description:</td>
+      <td>
+        <textarea id="description" name="description" rows="10" cols="40"></textarea>
+      </td>
+    </tr>
   </table>
   <input type="submit" value="Submit" />
 </div>  

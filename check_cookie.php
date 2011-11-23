@@ -21,7 +21,7 @@ function check_cookie($referer, $priv) {
     }
   } else {
     setcookie('referer', $referer);
-    header("Location: http://cptrserver.ucollege.edu/nakern/www/login.php");
+    header("Location: login.php");
   }
 }
 ?>

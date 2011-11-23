@@ -1,3 +1,10 @@
+.confirmation {
+	background: #E5F7E3;
+	border: 1px solid #C5E1C8;
+	color: #005E20;
+	padding: 0.5em;
+}
+
 .form table {
 	padding-bottom: 1em;
 	text-align: left;
@@ -10,7 +17,12 @@ input[type="text"] {
 
 input[type="password"] {
 	width: 100%;
-	padding: 0.25em
+	padding: 0.25em;
+}
+
+input[readonly="readonly"] {
+	border: 1px solid #aaa;
+	background: #eee;
 }
 
 #err_txt {

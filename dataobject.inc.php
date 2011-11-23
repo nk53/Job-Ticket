@@ -9,12 +9,6 @@
 /**
  * Holds information about the database connection.
  */
-$database = array(
-  'host' => 'localhost',
-  'user' => 'nakern',
-  'password' => 'nakern',
-  'db_name' => 'nakern',
-);
 
 //require_once('Schema.php');
 require_once('DataObject.php');

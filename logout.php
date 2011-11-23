@@ -4,6 +4,6 @@
 setcookie('user', null);
 
 // Return user to home page
-header('Location: http://cptrserver.ucollege.edu/nakern/www/index.php');
+header('Location: index.php');
 
 ?>
