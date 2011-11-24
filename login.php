@@ -48,7 +48,6 @@ function show_login_form($login_failure=0) {
 <tr><td><input type="text" name="user" /></td></tr>
 <tr><td>Password</td></tr>
 <tr><td><input type="password" name="password" /></td></tr>
-<tr><td><span id="err_txt">
 </table>
 </div>
 <input type="submit" name="submit" value="Submit" />
