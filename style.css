@@ -5,9 +5,27 @@
 	padding: 0.5em;
 }
 
+.even {
+	background-color: white;
+}
+
+.list {
+	background: #E4E4E4;
+	border: 1px solid #E4E4E4;
+	border-collapse: collapse;
+}
+
+.list tr td {
+	padding: 0 1em 0 1em;
+}
+
 .form table {
 	padding-bottom: 1em;
 	text-align: left;
+}
+
+.odd {
+	background-color: #F6F7F8;
 }
 
 input[type="text"] {
@@ -23,6 +41,10 @@ input[type="password"] {
 input[readonly="readonly"] {
 	border: 1px solid #aaa;
 	background: #eee;
+}
+
+textarea {
+	width: 100%;
 }
 
 #err_txt {

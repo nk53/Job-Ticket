@@ -23,10 +23,10 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) { ?>
       <tr><td>Requested by:</td><td><input type="text" disabled id="rq_name" /></td></tr>
       <tr><td>Phone #:</td><td><input disabled type="text" id="rq_phone" /></td></tr>
       <tr><td>Deadline:</td><td>
-        <input disabled type="text" id="rq_year" />
-        <input disabled type="text" id="rq_month" />
-        <input disabled type="text" id="rq_day" />
-      <tr><td>Description:</td><td><input disabled type="text" id="rq_description" /></td></tr>
+        <input disabled type="select" id="rq_year" />
+        <input disabled type="select" id="rq_month" />
+        <input disabled type="select" id="rq_day" />
+      <tr><td>Description:</td><td><textarea disabled id="rq_description" rows="10" cols="40"></textarea></td></tr>
       <tr><td>Estimated number of hours to complete:</td><td><input id="hours" type="text" /></td></tr>
 	    <tr><td>Estimated total cost:</td><td><input id="cost" type="text" /></td></tr>
 		<tr><td>Estimated date of completion:</td><td>
@@ -52,7 +52,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) { ?>
       <input type="submit" value="Submit" />
     </div>  
   </form>
-  <div class="list">
+  <div>
     <?php show_list('assign'); ?>
   </div>
 </body>

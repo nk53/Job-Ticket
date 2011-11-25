@@ -13,8 +13,7 @@ class DataObject {
     'bool' => false,
   );
   
-  protected $result;
-  
+  protected $result; 
   protected $fields;
   protected $table;
   
@@ -37,13 +36,15 @@ class DataObject {
     return $this->link;
   }
 
-  public function query($query) {
+  public function query($query, $fetch_row=true) {
     $this->db_connect();
-    $result = mysql_query($query);
+    $result = mysql_query($query)
+      or die('Query failed: ' . mysql_error());
     if (strstr($query, 'SELECT')) {
-      $this->set_result(mysql_query($query))
-        or die('Query failed: ' . mysql_error());
-      $this->set_vals(mysql_fetch_assoc($this->get_result()));
+      $this->set_result($result);
+      if ($fetch_row) {
+        $this->set_vals(mysql_fetch_assoc($result));
+      }
     }
   }
   
@@ -59,7 +60,6 @@ class DataObject {
 
   protected function set_result($value) {
     $this->result = $value;
-    echo $this->result;
   }
   
   public function insert() {
@@ -69,7 +69,7 @@ class DataObject {
     foreach ($this->fields as $field => $type) {
       if (!is_null($this->$field)) {
         $col_names .= "$field, ";
-        if ($quote[$type]) {
+        if ($this->quote[$type]) {
           $col_vals .= '"' . $this->$field . '", ';
         } else {
           $col_vals .= $this->$field . ', ';
@@ -82,7 +82,27 @@ class DataObject {
     $query .= "($col_names) VALUES ($col_vals);";
     $this->query($query);
   }
-    
+  
+  public function find($fetch_row=true) {
+    $query = "SELECT * FROM {$this->table}";
+    $where = '';
+    foreach ($this->fields as $field => $type) {
+      if (!is_null($this->$field)) {
+        if ($this->quote[$type]) {
+          $where .= "$field = '{$this->$field}' AND ";
+        } else {
+          $where .= "$field = {$this->$field} AND ";
+        }
+      }
+    }
+    if (!empty($where)) {
+      // Remove trailing "AND "
+      $where = substr($where, 0, -4);
+    }
+    $query .= $where;
+    $this->query($query, $fetch_row);
+  }
+  
   public function rows() {
     $row = mysql_fetch_assoc($this->get_result());
     if ($row) {

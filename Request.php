@@ -5,7 +5,6 @@ require_once('dataobject.inc.php');
 
 class Request extends DataObject {
   
-  protected $id;
   protected $fields = array(
     'id' => 'int',
     'name' => 'varchar',
@@ -16,6 +15,7 @@ class Request extends DataObject {
   );
   protected $table = 'request';
   
+  public $id;
   public $name;
   public $phone;
   public $deadline;
