@@ -5,6 +5,14 @@ require_once('dataobject.inc.php');
 class DataObject {
   
   private $link;
+  private $quote = array(
+    'date' => true,
+    'int' => false,
+    'text' => true,
+    'varchar' => true,
+    'bool' => false,
+  );
+  
   protected $result;
   
   protected $fields;
@@ -55,6 +63,7 @@ class DataObject {
   }
   
   public function insert() {
+<<<<<<< HEAD:DataObject.php
     $quote = array(
       'date' => true,
       'int' => false,
@@ -62,6 +71,8 @@ class DataObject {
       'varchar' => true,
       'bool' => false,
     );
+=======
+>>>>>>> 4d9f1ccccf68e7425016dc4eef52a1b651b49790:DataObject.php
     $query = "INSERT INTO $this->table ";
     $col_names = '';
     $col_vals = '';
