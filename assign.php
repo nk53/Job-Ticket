@@ -1,5 +1,6 @@
 <?php
-include('check_cookie.php');
+require('check_cookie.php');
+require('show_list.php');
 if (check_cookie($_SERVER['PHP_SELF'], 2)) { ?>
 <!DOCTYPE html>
 <head>
@@ -51,6 +52,9 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) { ?>
       <input type="submit" value="Submit" />
     </div>  
   </form>
+  <div class="list">
+    <?php show_list('assign'); ?>
+  </div>
 </body>
 </html>
 <?php } ?>

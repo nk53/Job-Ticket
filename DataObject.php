@@ -60,6 +60,7 @@ class DataObject {
       'int' => false,
       'text' => true,
       'varchar' => true,
+      'bool' => false,
     );
     $query = "INSERT INTO $this->table ";
     $col_names = '';
@@ -79,6 +80,10 @@ class DataObject {
     $col_vals = substr($col_vals, 0, -2);
     $query .= "($col_names) VALUES ($col_vals);";
     $this->query($query);
+  }
+  
+  public function find() {
+    
   }
   
   public function rows() {
