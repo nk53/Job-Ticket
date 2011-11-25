@@ -12,6 +12,7 @@ class Request extends DataObject {
     'phone' => 'int',
     'deadline' => 'date',
     'description' => 'text',
+    'approved' => 'bool',
   );
   protected $table = 'request';
   
@@ -19,6 +20,7 @@ class Request extends DataObject {
   public $phone;
   public $deadline;
   public $description;
+  public $approved;
   
   public function get_id() {
     return $this->id;
