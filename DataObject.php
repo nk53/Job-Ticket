@@ -63,16 +63,6 @@ class DataObject {
   }
   
   public function insert() {
-<<<<<<< HEAD:DataObject.php
-    $quote = array(
-      'date' => true,
-      'int' => false,
-      'text' => true,
-      'varchar' => true,
-      'bool' => false,
-    );
-=======
->>>>>>> 4d9f1ccccf68e7425016dc4eef52a1b651b49790:DataObject.php
     $query = "INSERT INTO $this->table ";
     $col_names = '';
     $col_vals = '';
@@ -92,11 +82,7 @@ class DataObject {
     $query .= "($col_names) VALUES ($col_vals);";
     $this->query($query);
   }
-  
-  public function find() {
     
-  }
-  
   public function rows() {
     $row = mysql_fetch_assoc($this->get_result());
     if ($row) {
