@@ -1,8 +1,5 @@
-This is a project that I am doing for a class. It is not part of the project to put it on GitHub, but I figured I should
-have a better version-controlling method than just using vim on the live server.
+This is a project that I am doing for a class. It is not part of the project to put it on GitHub, but I figured I should have a better version-controlling method than just using vim on the live server.
 
-The project is a Job Ticket system, which means that a user (with an account) can request a job to be performed, manage
-who is assigned to a job, and/or record work performed for the job (depending on the user's permission level).
+The project is a Job Ticket system, which means that a user (with an account) can request a job to be performed, manage who is assigned to a job, and/or record work performed for the job (depending on the user's permission level).
 
-I am quite aware that it is not very secure. I would be using PEAR libraries, but I am not in the sudoers file, so I
-cannot add Auth or DB_DataObject.
+I am quite aware that it is not very secure. I would be using PEAR libraries, but I am not in the sudoers file, so I cannot add Auth or DB_DataObject.
