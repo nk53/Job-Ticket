@@ -1,6 +1,7 @@
 <?php
 require_once('Request.php');
-include('check_cookie.php');
+require_once('check_cookie.php');
+require_once('show_list.php');
 if (check_cookie($_SERVER['PHP_SELF'], null)) {
   if (!empty($_POST)) {
     $req = new Request();
@@ -9,11 +10,12 @@ if (check_cookie($_SERVER['PHP_SELF'], null)) {
     $req->phone = str_replace('-', '',$_POST['phone']);
     $req->description = $_POST['description'];
     // Force date into correct format.
-    $day = $_POST['day'];
+    /*$day = $_POST['day'];
     $month = $_POST['month'];
     $year = $_POST['year'];
     $time = strtotime("$day $month $year");
-    $req->deadline = date('Y-m-d');
+    $req->deadline = date('Y-m-d');*/
+    $req->deadline = parse_date($_POST);
     $req->insert();
     header('Location: index.php?conf=true');
   }
