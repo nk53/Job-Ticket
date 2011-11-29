@@ -8,6 +8,7 @@ class DataObject {
   private $quote = array(
     'date' => true,
     'int' => false,
+    'decimal' => false,
     'text' => true,
     'varchar' => true,
     'bool' => false,
@@ -39,7 +40,8 @@ class DataObject {
   public function query($query, $fetch_row=true) {
     $this->db_connect();
     $result = mysql_query($query)
-      or die('Query failed: ' . mysql_error());
+      or die('Query failed: ' . mysql_error().
+             ' define SHOW_QUERIES as true to see what went wrong');
     if (strstr($query, 'SELECT')) {
       $this->set_result($result);
       if ($fetch_row) {
@@ -83,23 +85,42 @@ class DataObject {
     $this->query($query);
   }
   
+  /*public function update() {
+    $query = "UPDATE $this->table SET ";
+    $cols = '';
+    foreach ($this->fields as $field => $type) {
+      if (!is_null($this->$field)) {
+        $cols .= "$field=";
+        if ($this->quote[$type]) {
+          $cols .= '"' . $this->$field . '", ';
+        } else {
+          $cols .= $this->$field . ', ';
+        }
+      }
+    }
+    // Remove trailing ", "
+    $cols = substr($cols, 0, -2);
+    $query .= $cols;
+    $this->query($query);
+  }*/
+  
   public function find($fetch_row=true) {
     $query = "SELECT * FROM {$this->table}";
     $where = '';
     foreach ($this->fields as $field => $type) {
       if (!is_null($this->$field)) {
         if ($this->quote[$type]) {
-          $where .= "$field = '{$this->$field}' AND ";
+          $where .= "$field='{$this->$field}' AND ";
         } else {
-          $where .= "$field = {$this->$field} AND ";
+          $where .= "$field={$this->$field} AND ";
         }
       }
     }
     if (!empty($where)) {
       // Remove trailing "AND "
       $where = substr($where, 0, -4);
+      $query .= ' WHERE ' . $where;
     }
-    $query .= $where;
     $this->query($query, $fetch_row);
   }
   
