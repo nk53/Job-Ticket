@@ -52,11 +52,11 @@ function show_login_form($login_failure=0) {
 </div>
 <input type="submit" name="submit" value="Submit" />
 </form>
-<p><span id="err_txt">
 <?php if ($login_failure) {?>
+<p><span id="err_txt">
 The username or password you entered was incorrect.
-<?php } ?>
 </span></p>
+<?php } ?>
 </body>
 </html>
 <?php } ?>
