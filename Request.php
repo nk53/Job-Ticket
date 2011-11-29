@@ -22,10 +22,6 @@ class Request extends DataObject {
   public $description;
   public $approved;
   
-  public function get_id() {
-    return $this->id;
-  }
-  
 }
 
 ?>
