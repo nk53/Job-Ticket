@@ -1,6 +1,77 @@
 <?php
-include('check_cookie.php');
-if (check_cookie($_SERVER['PHP_SELF'], 1)) { ?>
+require_once('check_cookie.php');
+require_once('show_list.php');
+require_once('Assign.php');
+require_once('Request.php');
+require_once('Users.php');
+if (check_cookie($_SERVER['PHP_SELF'], 1)) {
+  if (!empty($_POST)) {
+    if (!empty($_POST['aid'])) {
+      $asn = new Assign();
+      $asn->id = $_POST['aid'];
+      $asn->find();
+      $rec = new Record();
+      $rec->aid = $_POST['aid'];
+      $rec->uid = $asn->rid;
+      $rec->date = parse_date($_POST);
+      $rec->hours = $_POST['hours'];
+      $rec->materials = $_POST['materials'];
+      $rec->cost = str_replace('$', '', $_POST['cost']);
+      $rec->insert();
+    } else if (!empty($_POST['id'])) {
+      $rec = new Record();
+      $date = parse_date($_POST);
+      $cost = str_replace('$', '', $_POST['cost']);
+      $query = 'UPDATE record ' . 
+               "SET date='$date', " .
+               "hours={$_POST['hours']}, " .
+               "materials='{$_POST['materials']}', " .
+               "cost=$cost " .
+               "WHERE id={$_POST['id']}";
+      $rec->query($query);
+    }
+  }
+  // Initialize values!
+  $aid = (isset($_GET['aid'])) ? $_GET['aid'] : '';
+  $id = (isset($_GET['id'])) ? $_GET['id'] : '';
+  $requestor = '';
+  $requestor_phone = '';
+  $deadline = '';
+  $description = '';
+  $hours = '';
+  $materials = '';
+  $cost = '';
+  if ($aid) {
+    $asn = new Assign();
+    $asn->id = $aid;
+    $asn->find();
+    $req = new Request();
+    $req->id = $asn->rid;
+    $req->find();
+    $requestor = $req->name;
+    $requestor_phone = parse_phone($req->phone);
+    $deadline = $asn->complete;
+    $description = $req->description;
+  } else if ($id) {
+    $rec = new Record();
+    $rec->id = $id;
+    $rec->find();
+    $asn = new Assign();
+    $asn->id = $rec->aid;
+    $asn->find();
+    $req = new Request();
+    $req->id = $asn->rid;
+    $req->find();
+    $requestor = $req->name;
+    $requestor_phone = parse_phone($req->phone);
+    $deadline = $asn->complete;
+    $description = $req->description;
+    $hours = $rec->hours;
+    $materials = $rec->materials;
+    $cost = '$'.$rec->cost;
+  }
+
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -19,7 +90,25 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) { ?>
   <h1>Job Record Form</h1>
   <form id="form" method="post" action="record.php">
     <div class="form">
+      <input type="hidden" id="aid" name="aid" value="<?php echo $aid ?>" />
+      <input type="hidden" id="id" name="id" value="<?php echo $id ?>" />
       <table border="0">
+        <tr>
+          <td>Requested by:</td>
+          <td><input type="text" value="<?php echo $requestor ?>" disabled /></td>
+        </tr>
+        <tr>
+          <td>Phone:</td>
+          <td><input type="text" value="<?php echo $requestor_phone ?>" disabled /></td>
+        </td>
+        <tr>
+          <td>Deadline</td>
+          <td><input type="text" value="<?php echo $deadline ?>" disabled /></td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td><textarea rows="10" cols="40" disabled><?php echo $description ?></textarea></td>
+        </tr>
         <tr><td>Date:</td><td>
         <select id="year" name="year"></select>
         <select id="month" name="month">
@@ -37,13 +126,19 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) { ?>
           <option id="month_11" value="December">December</option>
         </select>
         <select id="day" name="day"></select></td></tr>
-        <tr><td>Number of hours:</td><td><input id="hours" type="text" /></td></tr>
-        <tr><td>Materials used:</td><td><textarea id="materials" rows="10" cols="40"></textarea></td></tr>
-        <tr><td>Cost of materials:</td><td><input id="cost" type="text" /></td></tr>
+        <tr><td>Number of hours:</td><td><input name="hours" id="hours" type="text" value="<?php echo $hours ?>"/></td></tr>
+        <tr><td>Materials used:</td><td><textarea name="materials" id="materials" rows="10" cols="40"><?php echo $materials ?></textarea></td></tr>
+        <tr><td>Cost of materials:</td><td><input name="cost" id="cost" type="text" value="<?php echo $cost ?>" /></td></tr>
       </table>
       <input type="submit" value="Submit" />
     </div>  
   </form>
+  <div>
+    <?php show_list('assign'); ?>
+  </div>
+  <div>
+    <?php show_list('record'); ?>
+  </div>
 </body>
 </html>
 <?php } ?>

@@ -15,7 +15,7 @@
 	border-collapse: collapse;
 }
 
-.list tr td {
+.list tr td, .list tr th {
 	padding: 0 1em 0 1em;
 }
 

@@ -5,7 +5,8 @@
 function validate() {
 	return checkHours()
 		&& checkTextArea("materials")
-		&& checkCost();
+		&& checkCost()
+                && checkRecord();
 }
 
 //Register event handlers

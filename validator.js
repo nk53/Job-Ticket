@@ -109,6 +109,21 @@ function checkPhone() {
 	}
 }
 
+/*
+ * Returns TRUE if either of the hidden 'id' or 'aid' inputs is not empty
+ */
+function checkRecord() {
+	var id = document.getElementById('id').value;
+	var aid = document.getElementById('aid').value;
+	if (id || aid) {
+		return true;
+	} else {
+		alert("You need to select an assignment or record " +
+			"before you submit a new record");
+		return false;
+	}
+}
+
 /**
  * Makes an AJAX call that stores date info in the date elements.
  */

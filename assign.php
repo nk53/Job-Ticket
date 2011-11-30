@@ -142,7 +142,7 @@ if ($id) {
     </div>  
   </form>
   <div>
-    <?php show_list('assign'); ?>
+    <?php show_list('request'); ?>
   </div>
 </body>
 </html>
