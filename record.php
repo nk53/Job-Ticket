@@ -133,12 +133,8 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) {
       <input type="submit" value="Submit" />
     </div>  
   </form>
-  <div>
-    <?php show_list('assign'); ?>
-  </div>
-  <div>
-    <?php show_list('record'); ?>
-  </div>
+  <?php show_list('assign'); ?>
+  <?php show_list('record'); ?>
 </body>
 </html>
 <?php } ?>

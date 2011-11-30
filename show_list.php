@@ -32,12 +32,13 @@ function show_list($view) {
   for ($i=1; $do->rows(); $i++) {
     echo_row($view, $do, ($i%2 == 0) ? 'even' : 'odd');
   }
-  echo "</form></table>";
+  echo "</form></table></div>";
 }
 
 // Function start: show_header
 function show_header($view) { ?>
-<table class="list">
+<div class="list">
+<table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <?php
   if ($view == 'assign') {

@@ -10,6 +10,10 @@
 }
 
 .list {
+	padding: 1em;
+}
+
+.list table {
 	background: #E4E4E4;
 	border: 1px solid #E4E4E4;
 	border-collapse: collapse;

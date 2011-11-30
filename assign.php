@@ -141,9 +141,7 @@ if ($id) {
       <input type="submit" value="Submit" />
     </div>  
   </form>
-  <div>
-    <?php show_list('request'); ?>
-  </div>
+  <?php show_list('request'); ?>
 </body>
 </html>
 <?php } ?>
