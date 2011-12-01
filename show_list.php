@@ -13,7 +13,7 @@ require_once('Request.php');
 require_once('Record.php');
 require_once('Users.php');
 
-function show_list($view) {
+function show_list($view, $id) {
   if ($view == 'assign') {  
     $do = new Assign();
     $query = "SELECT assign.* FROM assign, request " .
@@ -30,7 +30,8 @@ function show_list($view) {
   }
   show_header($view);
   for ($i=1; $do->rows(); $i++) {
-    echo_row($view, $do, ($i%2 == 0) ? 'even' : 'odd');
+    $is_selected = ($do->id == $id) ? ' selected' : '';
+    echo_row($view, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected);
   }
   echo "</form></table></div>";
 }
@@ -80,7 +81,7 @@ function show_header($view) { ?>
 }
 // Function end: show_header
 
-function echo_row($view, $do, $even_or_odd) {
+function echo_row($view, $do, $even_or_odd, $is_selected) {
   if ($view == 'assign') {
     // Get fullname of requestor
     $req = new Request();
@@ -92,8 +93,9 @@ function echo_row($view, $do, $even_or_odd) {
     $user->id = $do->aid;
     $user->find();
     $assigned_to = $user->fullname;
-    echo "<tr class='$even_or_odd'>" .
-      "<td>{$do->id}</td>" .
+    //echo ($is_selected) ? 'TRUE' : 'FALSE';
+    echo "<tr class='$even_or_odd$is_selected'>" .
+      "<td>{$do->id}123</td>" .
       "<td>$requestor</td>" .
       "<td>{$do->hours}</td>" .
       "<td>\${$do->cost}</td>" .
@@ -112,7 +114,7 @@ function echo_row($view, $do, $even_or_odd) {
     $user->id = $do->uid;
     $user->find();
     $assigned_to = $user->fullname;
-    echo "<tr class='$even_or_odd'>" .
+    echo "<tr class='$even_or_odd$is_selected'>" .
       "<td>{$do->id}</td>" .
       "<td>{$do->aid}</td>" .
       "<td>$assigned_to</td>" .
@@ -130,7 +132,7 @@ function echo_row($view, $do, $even_or_odd) {
       $description = $do->description;
     }
     $approved = ($do->approved) ? 'Yes' : 'No';
-    echo "<tr class='$even_or_odd'>" .
+    echo "<tr class='$even_or_odd$is_selected'>" .
       "<td>{$do->id}</td>" .
       "<td>{$do->name}</td>" .
       '<td>'.parse_phone($do->phone).'</td>' .
