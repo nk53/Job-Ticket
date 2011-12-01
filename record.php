@@ -83,9 +83,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) {
 <script type="text/javascript" src="validate_record.js"></script>
 </head>
 <body onload="loadEventHandlers();">
-  <a href="index.php">Home</a>
-  <a href="assign.php">Assign</a>
-  <a href="request.php">Request</a>
+  <?php include('header.php'); ?>
   <a href="logout.php">Logout</a>
   <h1>Job Record Form</h1>
   <form id="form" method="post" action="record.php">

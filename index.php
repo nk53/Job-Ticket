@@ -7,9 +7,11 @@
 <body>
 <center>
 <p>
-<a href="assign.php">Assign</a>
+<!--<a href="assign.php">Assign</a>
+<a href="history.php">History</a>
 <a href="record.php">Record</a>
-<a href="request.php">Request</a>
+<a href="request.php">Request</a>-->
+<?php include('header.php'); ?>
 <?php if (isset($_COOKIE["user"])): ?>
 <a href="logout.php">Logout</a>
 <?php endif; ?>

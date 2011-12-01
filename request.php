@@ -31,9 +31,7 @@ if (check_cookie($_SERVER['PHP_SELF'], null)) {
 <script type="text/javascript" src="validate_request.js"></script>
 </head>
 <body onload="loadEventHandlers();">
-<a href="index.php">Home</a>
-<a href="assign.php">Assign</a>
-<a href="record.php">Record</a>
+<?php include('header.php'); ?>
 <a href="logout.php">Logout</a>
 <form id="form" method="post" action="request.php">
 <div class="form">

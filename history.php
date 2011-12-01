@@ -68,10 +68,7 @@ if ($id) {
 <script type="text/javascript" src="validate_assign.js"></script>
 </head>
 <body onload="loadEventHandlers();">
-  <a href="index.php">Home</a>
-  <a href="history.php">History</a>
-  <a href="record.php">Record</a>
-  <a href="request.php">Request</a>
+  <?php include('header.php'); ?>
   <a href="logout.php">Logout</a>
   <h1>Job Approval Form</h1>
   <form id="form" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
