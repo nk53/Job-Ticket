@@ -1,3 +1,11 @@
+#cost {
+	width: 5em;
+}
+
+#hours {
+	width: 5em;
+}
+
 .confirmation {
 	background: #E5F7E3;
 	border: 1px solid #C5E1C8;

@@ -60,7 +60,6 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
     
     //update size of textarea to fit description
     $row_size = 1 + strlen($desc) / 40;
-    echo strlen($desc);
   }
 ?>
 <!DOCTYPE html>
