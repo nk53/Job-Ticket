@@ -60,17 +60,17 @@ if ($id) {
 ?>
 <!DOCTYPE html>
 <head>
-<title>Job Approval</title>
+<title>Job History</title>
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <link rel="stylesheet" type="text/css" href="style.css" />
 <script type="text/javascript" src="jquery-1.7.min.js"></script>
 <script type="text/javascript" src="validator.js"></script>
-<script type="text/javascript" src="validate_assign.js"></script>
+<script type="text/javascript" src="validate_history.js"></script>
 </head>
 <body onload="loadEventHandlers();">
   <?php include('header.php'); ?>
   <a href="logout.php">Logout</a>
-  <h1>Job Approval Form</h1>
+  <h1>View Job History</h1>
   <form id="form" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
     <input name="rid" type="hidden" value="<?php echo $id ?>" />
     <div class="form">
@@ -136,10 +136,12 @@ if ($id) {
           </td>
         </tr>
       </table>
+      <input type="button" value="Prev" id="prev" />
       <input type="submit" value="Submit" />
+      <input type="button" value="Next" id="next" />
     </div>  
   </form>
-  <?php show_list('request', $id); ?>
+  <?php show_list('history', $id); ?>
 </body>
 </html>
 <?php } ?>
