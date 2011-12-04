@@ -13,36 +13,54 @@ require_once('Request.php');
 require_once('Record.php');
 require_once('Users.php');
 
-function show_list($view, $id) {
-  if ($view == 'assign') {  
+function show_list($list, $id) {
+  $prev = '';
+  $next = '';
+  $id_list = array();
+  if ($list == 'assign') {  
     $do = new Assign();
     $query = "SELECT assign.* FROM assign, request " .
              "WHERE request.id = assign.rid " .
              "AND request.approved = TRUE " .
              "ORDER BY assign.id";
     $do->query($query);
-  } else if ($view == 'record') {
+  } else if ($list == 'history') {
+    $do = new Request();
+    $do->find(false);
+  } else if ($list == 'record') {
     $do = new Record();
     $do->find(false);
-  } else if ($view == 'request') {
+  } else if ($list == 'request') {
     $do = new Request();
     $do->find(false);
   }
-  show_header($view);
+  show_header($list);
   for ($i=1; $do->rows(); $i++) {
     $is_selected = ($do->id == $id) ? ' selected' : '';
-    echo_row($view, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected);
+    $id_list[] = $do->id;
+    echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected);
   }
+  
+  for($j=0;$j<count($id_list);$j++){
+    if ($id_list[$j] == $id && $j > 0){
+      $prev = $id_list[$j-1];
+    }
+    if ($id_list[$j] == $id && $j < count($id_list)) {
+      $next = $id_list[$j+1];
+    }
+  }
+
   echo "</form></table></div>";
+  echo "<script>var prev = '$prev'; var next = '$next';</script>";
 }
 
 // Function start: show_header
-function show_header($view) { ?>
+function show_header($list) { ?>
 <div class="list">
 <table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <?php
-  if ($view == 'assign') {
+  if ($list == 'assign') {
 ?>
 <tr>
   <th>Assignment Id</th>
@@ -54,7 +72,18 @@ function show_header($view) { ?>
   <th>Edit</th>
 </tr>
 <?php
-  } else if ($view == 'request') {
+  } else if ($list == 'history') {
+?>
+<tr>
+  <th>Request Id</th>
+  <th>Name</th>
+  <th>Phone</th>
+  <th>Deadline</th>
+  <th>Description</th>
+  <th>Approved</th>
+  <th>View</th>
+</tr>
+<?php } else if ($list == 'request') {
 ?>
 <tr>
   <th>Request Id</th>
@@ -65,7 +94,7 @@ function show_header($view) { ?>
   <th>Approved</th>
   <th>Edit</th>
 </tr>
-<?php } else if ($view == 'record') { ?>
+<?php } else if ($list == 'record') { ?>
 <tr>
   <th>Record Id</th>
   <th>Assignment Id</th>
@@ -81,8 +110,8 @@ function show_header($view) { ?>
 }
 // Function end: show_header
 
-function echo_row($view, $do, $even_or_odd, $is_selected) {
-  if ($view == 'assign') {
+function echo_row($list, $do, $even_or_odd, $is_selected) {
+  if ($list == 'assign') {
     // Get fullname of requestor
     $req = new Request();
     $req->id = $do->rid;
@@ -95,7 +124,7 @@ function echo_row($view, $do, $even_or_odd, $is_selected) {
     $assigned_to = $user->fullname;
     //echo ($is_selected) ? 'TRUE' : 'FALSE';
     echo "<tr class='$even_or_odd$is_selected'>" .
-      "<td>{$do->id}123</td>" .
+      "<td>{$do->id}</td>" .
       "<td>$requestor</td>" .
       "<td>{$do->hours}</td>" .
       "<td>\${$do->cost}</td>" .
@@ -103,7 +132,23 @@ function echo_row($view, $do, $even_or_odd, $is_selected) {
       "<td>$assigned_to</td>" .
       "<td><a href='{$_SERVER['PHP_SELF']}?aid={$do->id}'>Edit</a></td>" .
     "</td>";
-  } else if ($view == 'record') {
+  } else if ($list == 'history') {
+    if (strlen($do->description) > 23) {
+      $description = substr($do->description, 0, 20)."...";
+    } else {
+      $description = $do->description;
+    }
+    $approved = ($do->approved) ? 'Yes' : 'No';
+    echo "<tr class='$even_or_odd$is_selected'>" .
+      "<td>{$do->id}</td>" .
+      "<td>{$do->name}</td>" .
+      '<td>'.parse_phone($do->phone).'</td>' .
+      "<td>{$do->deadline}</td>" .
+      "<td>$description</td>" .
+      "<td>$approved</td>" .
+      "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>View</a></td>" .
+    "</tr>";
+  } else if ($list == 'record') {
     if (strlen($do->materials) > 23) {
       $materials = substr($do->materials, 0, 20)."...";
     } else {
@@ -125,7 +170,7 @@ function echo_row($view, $do, $even_or_odd, $is_selected) {
       "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>Edit</a></td>" .
     "</td>";
       
-  } else if ($view == 'request') {
+  } else if ($list == 'request') {
     if (strlen($do->description) > 23) {
       $description = substr($do->description, 0, 20)."...";
     } else {
