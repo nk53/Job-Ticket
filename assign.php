@@ -138,7 +138,12 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
       <tr>
           <td>Approved? </td>
           <td>
-            <input name="approved" type="checkbox" id="approved" <?php echo $checked ?> />
+            <!--<input name="approved" type="checkbox" id="approved" <?php echo $checked ?> />-->
+            <select>
+              <option>Approve</option>
+              <option>Review Later</option>
+              <option>Deny</option>
+            </select>
           </td>
         </tr>
       </table>
