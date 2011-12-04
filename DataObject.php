@@ -17,7 +17,9 @@ class DataObject {
   protected $result; 
   protected $fields;
   protected $table;
-  
+  protected $limit;
+  protected $order_by;
+
   protected function db_connect() {
     $database = parse_ini_file("db.ini", true);
     $database = $database['Database'];
@@ -39,9 +41,14 @@ class DataObject {
 
   public function query($query, $fetch_row=true) {
     $this->db_connect();
+    if (isset($this->order_by) && !empty ($this->order_by)) {
+      $query .= ' ORDER BY ' . $this->order_by;
+    }
+    if (isset($this->limit) && !empty ($this->limit)) {
+      $query .= ' LIMIT ' . $this->limit;
+    }
     $result = mysql_query($query)
-      or die('Query failed: ' . mysql_error().
-             ' define SHOW_QUERIES as true to see what went wrong');
+      or die('Query failed: ' . mysql_error());
     if (strstr($query, 'SELECT')) {
       $this->set_result($result);
       if ($fetch_row) {
@@ -118,10 +125,18 @@ class DataObject {
     }
     if (!empty($where)) {
       // Remove trailing "AND "
-      $where = substr($where, 0, -4);
+      $where = substr($where, 0, -5);
       $query .= ' WHERE ' . $where;
     }
     $this->query($query, $fetch_row);
+  }
+  
+  public function limit($lim) {
+    $this->limit = $lim;
+  }
+  
+  public function order_by($ob) {
+    $this->order_by = $ob;
   }
   
   public function rows() {
