@@ -20,6 +20,7 @@ if (isset($_POST['user'])) {
   if ($user) {
     // Give user login cookie, or FALSE if login failed
     setcookie('user', $user['name']);
+    setcookie('uid', $user['uid']);
     setcookie('privileges', $user['privileges']);
     //echo $_COOKIE['referer'];
     // Return user to home page

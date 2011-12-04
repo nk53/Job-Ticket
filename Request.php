@@ -7,6 +7,7 @@ class Request extends DataObject {
   
   protected $fields = array(
     'id' => 'int',
+    'uid' => 'int',
     'name' => 'varchar',
     'phone' => 'int',
     'deadline' => 'date',
@@ -16,6 +17,7 @@ class Request extends DataObject {
   protected $table = 'request';
   
   public $id;
+  public $uid;
   public $name;
   public $phone;
   public $deadline;

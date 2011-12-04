@@ -5,6 +5,7 @@ require_once('show_list.php');
 if (check_cookie($_SERVER['PHP_SELF'], null)) {
   if (!empty($_POST)) {
     $req = new Request();
+    $req->uid = $_COOKIE['uid'];
     $req->name = $_POST['name'];
     // Remove '-' from phone number.
     $req->phone = str_replace('-', '',$_POST['phone']);
