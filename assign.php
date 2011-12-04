@@ -6,57 +6,62 @@ require_once('Assign.php');
 require_once('Users.php');
 
 if (check_cookie($_SERVER['PHP_SELF'], 2)) {
-if (!empty($_POST)) {
-  // Update the 'approved' property
-  $req = new Request();
-  $approved = empty($_POST['approved']) ? 'false' : 'true';
-  $query = 'UPDATE request SET approved=' . $approved .
-           ' WHERE id=' . $_POST['rid'];
-  $req->query($query);
+  $row_size = '1';
+  if (!empty($_POST)) {
+    // Update the 'approved' property
+    $req = new Request();
+    $approved = empty($_POST['approved']) ? 'false' : 'true';
+    $query = 'UPDATE request SET approved=' . $approved .
+             ' WHERE id=' . $_POST['rid'];
+    $req->query($query);
+    
+    // What's the id of the person this job is assigned to?
+    $user = new Users();
+    $user->fullname = $_POST['assign_to'];
+    $user->find();
+    $aid = $user->uid;
+    
+    // Insert the new assignment
+    $asn = new Assign();
+    $asn->rid = $_POST['rid'];
+    $asn->hours = $_POST['hours'];
+    $asn->cost = str_replace('$', '', $_POST['cost']);
+    $asn->complete = parse_date($_POST);
+    $asn->aid = $aid;
+    $asn->insert();
   
-  // What's the id of the person this job is assigned to?
-  $user = new Users();
-  $user->fullname = $_POST['assign_to'];
-  $user->find();
-  $aid = $user->uid;
+    header('Location: index.php');
+  }
+  // Initialize values!
+  $name = '';
+  $phone = '';
+  $year = '';
+  $month = '';
+  $day = '';
+  $desc = '';
+  $checked = '';
+  $id = (isset($_GET['id'])) ? $_GET['id'] : null;
+  if ($id) {
+    $req = new Request();
+    $req->id = $id;
+    $req->find();
   
-  // Insert the new assignment
-  $asn = new Assign();
-  $asn->rid = $_POST['rid'];
-  $asn->hours = $_POST['hours'];
-  $asn->cost = str_replace('$', '', $_POST['cost']);
-  $asn->complete = parse_date($_POST);
-  $asn->aid = $aid;
-  $asn->insert();
-
-  header('Location: index.php');
-}
-// Initialize values!
-$name = '';
-$phone = '';
-$year = '';
-$month = '';
-$day = '';
-$desc = '';
-$checked = '';
-$id = (isset($_GET['id'])) ? $_GET['id'] : null;
-if ($id) {
-  $req = new Request();
-  $req->id = $id;
-  $req->find();
-
-  $name = $req->name;
-  $phone = parse_phone($req->phone);
-  $y = substr($req->deadline, 0, 4);
-  $m = substr($req->deadline, 5, 2);
-  $d = substr($req->deadline, 8, 2);
-  $time = strtotime("$y/$m/$d");
-  $year = '<option>'.date('Y', $time).'</option>';
-  $month = '<option>'.date('F', $time).'</option>';
-  $day = '<option>'.date('j', $time).'</option>';
-  $desc = $req->description;
-  $checked = ($req->approved) ? 'checked="checked"' : '';
-}
+    $name = $req->name;
+    $phone = parse_phone($req->phone);
+    $y = substr($req->deadline, 0, 4);
+    $m = substr($req->deadline, 5, 2);
+    $d = substr($req->deadline, 8, 2);
+    $time = strtotime("$y/$m/$d");
+    $year = '<option>'.date('Y', $time).'</option>';
+    $month = '<option>'.date('F', $time).'</option>';
+    $day = '<option>'.date('j', $time).'</option>';
+    $desc = $req->description;
+    $checked = ($req->approved) ? 'checked="checked"' : '';
+    
+    //update size of textarea to fit description
+    $row_size = 1 + strlen($desc) / 40;
+    echo strlen($desc);
+  }
 ?>
 <!DOCTYPE html>
 <head>
@@ -96,8 +101,7 @@ if ($id) {
       </tr>
       <tr>
         <td>Description:</td>
-        <td><textarea disabled rows="10" cols="40"><?php echo $desc ?>
-          </textarea></td>
+        <td><textarea disabled rows="<?php echo $row_size ?>" cols="40"><?php echo $desc ?></textarea></td>
         </tr>
       <tr>
         <td>Estimated number of hours to complete:</td>
