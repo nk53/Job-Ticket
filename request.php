@@ -11,11 +11,6 @@ if (check_cookie($_SERVER['PHP_SELF'], null)) {
     $req->phone = str_replace('-', '',$_POST['phone']);
     $req->description = $_POST['description'];
     // Force date into correct format.
-    /*$day = $_POST['day'];
-    $month = $_POST['month'];
-    $year = $_POST['year'];
-    $time = strtotime("$day $month $year");
-    $req->deadline = date('Y-m-d');*/
     $req->deadline = parse_date($_POST);
     $req->insert();
     header('Location: index.php?conf=true');
@@ -69,6 +64,7 @@ if (check_cookie($_SERVER['PHP_SELF'], null)) {
   <input type="submit" value="Submit" />
 </div>  
 </form>
+<?php show_list('request', 0, true, false); ?>
 </body>
 </html>
 <?php } ?>

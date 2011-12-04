@@ -13,7 +13,25 @@ require_once('Request.php');
 require_once('Record.php');
 require_once('Users.php');
 
-function show_list($list, $id) {
+/**
+ * Generate a list from information in a table
+ * 
+ * @param $list
+ *   A string indicating the list to be generated: 'assign', 'history',
+ *   'record', or 'request'.
+ * 
+ * @param $id
+ *   The id of the item to be highlighted (usually the selected item).
+ * 
+ * @param $limit_to_user
+ *   Defaults to null. Any true value makes the 'request' list only show
+ *   requests by that user.
+ * 
+ * @param $edit
+ *   Defaults to true. Use false if you don't want to show the last
+ *   column (called 'edit' or 'view').
+ */
+function show_list($list, $id, $limit_to_user=null, $edit=true) {
   $prev = '';
   $next = '';
   $id_list = array();
@@ -32,15 +50,23 @@ function show_list($list, $id) {
     $do->find(false);
   } else if ($list == 'request') {
     $do = new Request();
+    if ($limit_to_user) {
+      $do->uid = $_COOKIE['uid'];
+      $do->limit(10);
+      $do->order_by('id DESC');
+    }
     $do->find(false);
   }
-  show_header($list);
+  show_header($list, $edit);
+
+  // Keep track of even/odd rows and prev/next list items
   for ($i=1; $do->rows(); $i++) {
     $is_selected = ($do->id == $id) ? ' selected' : '';
     $id_list[] = $do->id;
-    echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected);
+    echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit);
   }
   
+  // Set $prev and $next
   for($j=0;$j<count($id_list);$j++){
     if ($id_list[$j] == $id && $j > 0){
       $prev = $id_list[$j-1];
@@ -54,8 +80,8 @@ function show_list($list, $id) {
   echo "<script>var prev = '$prev'; var next = '$next';</script>";
 }
 
-// Function start: show_header
-function show_header($list) { ?>
+// Function start: show_header, hides edit/view column if $edit is false
+function show_header($list, $edit) { ?>
 <div class="list">
 <table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
@@ -92,7 +118,9 @@ function show_header($list) { ?>
   <th>Deadline</th>
   <th>Description</th>
   <th>Approved</th>
+<?php if($edit): ?>
   <th>Edit</th>
+<?php endif; ?>
 </tr>
 <?php } else if ($list == 'record') { ?>
 <tr>
@@ -110,7 +138,7 @@ function show_header($list) { ?>
 }
 // Function end: show_header
 
-function echo_row($list, $do, $even_or_odd, $is_selected) {
+function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
   if ($list == 'assign') {
     // Get fullname of requestor
     $req = new Request();
@@ -177,15 +205,19 @@ function echo_row($list, $do, $even_or_odd, $is_selected) {
       $description = $do->description;
     }
     $approved = ($do->approved) ? 'Yes' : 'No';
-    echo "<tr class='$even_or_odd$is_selected'>" .
-      "<td>{$do->id}</td>" .
-      "<td>{$do->name}</td>" .
-      '<td>'.parse_phone($do->phone).'</td>' .
-      "<td>{$do->deadline}</td>" .
-      "<td>$description</td>" .
-      "<td>$approved</td>" .
-      "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>Edit</a></td>" .
-    "</tr>";
+?>
+<tr class='<?php echo $even_or_odd.$is_selected ?>'>
+  <td><?php echo $do->id ?></td>
+  <td><?php echo $do->name ?></td>
+  <td><?php echo parse_phone($do->phone) ?></td>
+  <td><?php echo $do->deadline ?></td>
+  <td><?php echo $description ?></td>
+  <td><?php echo $approved ?></td>
+<?php if ($edit): ?>
+  <td><a href='<?php echo $_SERVER['PHP_SELF'].'?id='.$do->id ?>'>Edit</a></td>
+<?php endif; ?>
+</tr>
+<?
   }
 }
 
