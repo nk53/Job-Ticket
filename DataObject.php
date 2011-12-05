@@ -58,8 +58,10 @@ class DataObject {
   }
   
   protected function set_vals($values=array()) {
-    foreach ($values as $key => $value) {
-      $this->$key = $value;
+    if (!empty($values)) {
+      foreach ($values as $key => $value) {
+        $this->$key = $value;
+      }
     }
   }
   
