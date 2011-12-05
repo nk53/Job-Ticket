@@ -38,13 +38,17 @@ $year = '';
 $month = '';
 $day = '';
 $desc = '';
+$est_hours = '';
+$act_hours = '';
+$est_cost = '';
+$act_cost = '';
 $checked = '';
 $id = (isset($_GET['id'])) ? $_GET['id'] : null;
 if ($id) {
+  // Get request information
   $req = new Request();
   $req->id = $id;
   $req->find();
-
   $name = $req->name;
   $phone = parse_phone($req->phone);
   $y = substr($req->deadline, 0, 4);
@@ -56,6 +60,22 @@ if ($id) {
   $day = '<option>'.date('j', $time).'</option>';
   $desc = $req->description;
   $checked = ($req->approved) ? 'checked="checked"' : '';
+  // Get estimate information
+  $asn = new Assign();
+  $asn->rid=$id;
+  $asn->find();
+  $est_hours = $asn->hours;
+  $est_cost = $asn->cost;
+  // Get actual spending information
+  $rec = new Record();
+  // FIX THIS!!!
+  $rec->uid = $asn->rid;
+  $rec->find(false);
+  // Sum spending information together
+  while ($rec->rows()) {
+    $act_hours += $rec->hours;
+    $act_cost += $rec->cost;
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -97,12 +117,20 @@ if ($id) {
           </textarea></td>
         </tr>
       <tr>
-        <td>Estimated number of hours to complete:</td>
-        <td><input id="hours" name="hours" type="text" /></td>
+        <td>Estimated number of hours to complete:
+        <td><input id="hours" class="num" name="hours" type="text" value="<?php echo $est_hours ?>" disabled /></td>
+      </tr>
+      <tr>
+        <td>Actual hours:</td>
+        <td><input class="num" type="text" value="<?php echo $act_hours ?>" disabled /></td>
       </tr>
       <tr>
         <td>Estimated total cost:</td>
-        <td><input id="cost" name="cost" type="text" /></td>
+        <td><input id="cost" class="num" name="cost" type="text" value="<?php echo $est_cost ?>" disabled  /></td>
+      </tr>
+      <tr>
+        <td>Total spent:</td>
+        <td><input class="num" type="text" value="<?php echo $act_cost ?>" disabled /></td>
       </tr>
       <tr>
         <td>Estimated date of completion:</td>
