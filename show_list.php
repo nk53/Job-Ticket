@@ -147,7 +147,7 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
     $requestor = $req->name;
     // Get fullname of person this job is assigned to
     $user = new Users();
-    $user->id = $do->aid;
+    $user->uid = $do->aid;
     $user->find();
     $assigned_to = $user->fullname;
     //echo ($is_selected) ? 'TRUE' : 'FALSE';
