@@ -5,14 +5,16 @@ require_once('dataobject.inc.php');
 class DataObject {
   
   private $link;
-  private $quote = array(
+  /*private $quote = array(
     'date' => true,
     'int' => false,
+    'smallint' => false,
+    'tinyint' => false,
     'decimal' => false,
     'text' => true,
     'varchar' => true,
     'bool' => false,
-  );
+  );*/
   
   protected $result; 
   protected $fields;
@@ -40,6 +42,7 @@ class DataObject {
   }
 
   public function query($query, $fetch_row=true) {
+    echo "<pre>$query</pre><br />";
     $this->db_connect();
     if (isset($this->order_by) && !empty ($this->order_by)) {
       $query .= ' ORDER BY ' . $this->order_by;
@@ -55,6 +58,19 @@ class DataObject {
         $this->set_vals(mysql_fetch_assoc($result));
       }
     }
+  }
+  
+  public function call_function($func, $args=array()) {
+    $this->db_connect();
+    $query = "SELECT $func(";
+    foreach ($args as $arg) {
+      $query .= "'$arg', ";
+    }
+    $query = substr($query, 0, -2);
+    $query .= ")";
+    $result = mysql_query($query)
+      or die('Query failed: ' . mysql_error());
+    return mysql_fetch_row($result);
   }
   
   protected function set_vals($values=array()) {
@@ -80,11 +96,7 @@ class DataObject {
     foreach ($this->fields as $field => $type) {
       if (!is_null($this->$field)) {
         $col_names .= "$field, ";
-        if ($this->quote[$type]) {
-          $col_vals .= '"' . $this->$field . '", ';
-        } else {
-          $col_vals .= $this->$field . ', ';
-        }
+        $col_vals .= '"' . $this->$field . '", ';
       }
     }
     // Remove trailing ", "

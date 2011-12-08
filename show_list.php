@@ -9,7 +9,7 @@
  */
 
 require_once('Assign.php');
-require_once('Request.php');
+require_once('Jobs.php');
 require_once('Record.php');
 require_once('Users.php');
 
@@ -18,14 +18,14 @@ require_once('Users.php');
  * 
  * @param $list
  *   A string indicating the list to be generated: 'assign', 'history',
- *   'record', or 'request'.
+ *   'record', or 'jobs'.
  * 
  * @param $id
  *   The id of the item to be highlighted (usually the selected item).
  * 
  * @param $limit_to_user
- *   Defaults to null. Any true value makes the 'request' list only show
- *   requests by that user.
+ *   Defaults to null. Any true value makes the 'jobs' list only show
+ *   jobss by that user.
  * 
  * @param $edit
  *   Defaults to true. Use false if you don't want to show the last
@@ -37,32 +37,33 @@ function show_list($list, $id, $limit_to_user=null, $edit=true) {
   $id_list = array();
   if ($list == 'assign') {  
     $do = new Assign();
-    $query = "SELECT assign.* FROM assign, request " .
-             "WHERE request.id = assign.rid " .
-             "AND request.approved = TRUE " .
+    $query = "SELECT assign.* FROM assign, jobs " .
+             "WHERE jobs.id = assign.rid " .
+             "AND jobs.approved = TRUE " .
              "ORDER BY assign.id";
     $do->query($query);
   } else if ($list == 'history') {
-    $do = new Request();
+    $do = new Jobs();
     $do->find(false);
   } else if ($list == 'record') {
     $do = new Record();
     $do->find(false);
-  } else if ($list == 'request') {
-    $do = new Request();
+  } else if ($list == 'jobs') {
+    $do = new Jobs();
     if ($limit_to_user) {
-      $do->uid = $_COOKIE['uid'];
+      $do->userId = $_COOKIE['uid'];
       $do->limit(10);
-      $do->order_by('id DESC');
+      $do->order_by('jobId DESC');
     }
     $do->find(false);
+    $p_key = $do->primary; // Primary key
   }
   show_header($list, $edit);
 
   // Keep track of even/odd rows and prev/next list items
   for ($i=1; $do->rows(); $i++) {
-    $is_selected = ($do->id == $id) ? ' selected' : '';
-    $id_list[] = $do->id;
+    $is_selected = ($do->$p_key == $id) ? ' selected' : '';
+    $id_list[] = $do->$p_key;
     echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit);
   }
   
@@ -109,10 +110,10 @@ function show_header($list, $edit) { ?>
   <th>Approved</th>
   <th>View</th>
 </tr>
-<?php } else if ($list == 'request') {
+<?php } else if ($list == 'jobs') {
 ?>
 <tr>
-  <th>Request Id</th>
+  <th>Job Id</th>
   <th>Name</th>
   <th>Phone</th>
   <th>Deadline</th>
@@ -141,7 +142,7 @@ function show_header($list, $edit) { ?>
 function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
   if ($list == 'assign') {
     // Get fullname of requestor
-    $req = new Request();
+    $req = new Jobs();
     $req->id = $do->rid;
     $req->find();
     $requestor = $req->name;
@@ -198,19 +199,23 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
       "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>Edit</a></td>" .
     "</td>";
       
-  } else if ($list == 'request') {
+  } else if ($list == 'jobs') {
+    // Get the name of the person who submitted the job
+    $user = new Users();
+    $user->userId = $do->userId;
+    $user->find();
     if (strlen($do->description) > 23) {
       $description = substr($do->description, 0, 20)."...";
     } else {
       $description = $do->description;
     }
-    $approved = ($do->approved) ? 'Yes' : 'No';
+    $approved = $do->approved($do->status);
 ?>
 <tr class='<?php echo $even_or_odd.$is_selected ?>'>
-  <td><?php echo $do->id ?></td>
-  <td><?php echo $do->name ?></td>
-  <td><?php echo parse_phone($do->phone) ?></td>
-  <td><?php echo $do->deadline ?></td>
+  <td><?php echo $do->jobId ?></td>
+  <td><?php echo $user->fullName ?></td>
+  <td><?php echo parse_phone($user->phone) ?></td>
+  <td><?php echo $do->dueDate ?></td>
   <td><?php echo $description ?></td>
   <td><?php echo $approved ?></td>
 <?php if ($edit): ?>
@@ -222,9 +227,9 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
 }
 
 /**
- * Replaces 11-integer-long strings with '-' to represent a phone number.
+ * Replaces 1-integer-long strings with '-' to represent a phone number.
  * 
- * @param p an 11-digit phone number consisting of only digits (no '-')
+ * @param p an 10-digit phone number consisting of only digits (no '-')
  */
 function parse_phone($p) {
   return substr($p, 0, 3).'-'.substr($p, 3, 3).'-'.substr($p, 6);

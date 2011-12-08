@@ -1,14 +1,14 @@
 <?php
 require_once('check_cookie.php');
 require_once('show_list.php');
-require_once('Request.php');
+require_once('Jobs.php');
 require_once('Assign.php');
 require_once('Users.php');
 
-if (check_cookie($_SERVER['PHP_SELF'], 2)) {
+if (check_cookie($_SERVER['PHP_SELF'], 3)) {
 if (!empty($_POST)) {
   // Update the 'approved' property
-  $req = new Request();
+  $req = new Jobs();
   $approved = empty($_POST['approved']) ? 'false' : 'true';
   $query = 'UPDATE request SET approved=' . $approved .
            ' WHERE id=' . $_POST['rid'];

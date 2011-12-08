@@ -2,9 +2,9 @@
 require_once('check_cookie.php');
 require_once('show_list.php');
 require_once('Assign.php');
-require_once('Request.php');
+require_once('Jobs.php');
 require_once('Users.php');
-if (check_cookie($_SERVER['PHP_SELF'], 1)) {
+if (check_cookie($_SERVER['PHP_SELF'], 2)) {
   if (!empty($_POST)) {
     if (!empty($_POST['aid'])) {
       $asn = new Assign();
@@ -45,7 +45,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) {
     $asn = new Assign();
     $asn->id = $aid;
     $asn->find();
-    $req = new Request();
+    $req = new Jobs();
     $req->id = $asn->rid;
     $req->find();
     $requestor = $req->name;
@@ -59,7 +59,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) {
     $asn = new Assign();
     $asn->id = $rec->aid;
     $asn->find();
-    $req = new Request();
+    $req = new Jobs();
     $req->id = $asn->rid;
     $req->find();
     $requestor = $req->name;

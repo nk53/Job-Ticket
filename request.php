@@ -1,19 +1,23 @@
 <?php
-require_once('Request.php');
+require_once('Jobs.php');
+require_once('Users.php');
 require_once('check_cookie.php');
 require_once('show_list.php');
-if (check_cookie($_SERVER['PHP_SELF'], null)) {
+if (check_cookie($_SERVER['PHP_SELF'], 1)) {
+  $user = new Users();
+  $user->userId = $_COOKIE['uid'];
+  $user->find();
+  $name = $user->fullName;
+  $phone = parse_phone($user->phone);
   if (!empty($_POST)) {
-    $req = new Request();
-    $req->uid = $_COOKIE['uid'];
-    $req->name = $_POST['name'];
+    $job = new Jobs();
+    $job->userId = $_COOKIE['uid'];
     // Remove '-' from phone number.
-    $req->phone = str_replace('-', '',$_POST['phone']);
-    $req->description = $_POST['description'];
+    $job->description = $_POST['description'];
     // Force date into correct format.
-    $req->deadline = parse_date($_POST);
-    $req->insert();
-    header('Location: index.php?conf=true');
+    $job->dueDate = parse_date($_POST);
+    $job->insert();
+    //header('Location: index.php?conf=true');
   }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -34,10 +38,10 @@ if (check_cookie($_SERVER['PHP_SELF'], null)) {
   <h1>Job Request Form</h1>
   <table border="0">
     <tr><td>Name:</td>
-      <td><input  type="text" id="name" name="name" readonly="readonly" /></td>
+      <td><input type="text" id="name" name="name" readonly="readonly" value="<?php echo $name ?>" /></td>
     </tr>
     <tr><td>Phone #:</td>
-      <td><input type="text" id="phone" name="phone" /></td>
+      <td><input type="text" id="phone" name="phone" value="<?php echo $phone ?>" /></td>
     </tr>
     <tr><td>Job Deadline:</td><td><select id="year" name="year"></select>
     <select id="month" name="month">
@@ -64,7 +68,7 @@ if (check_cookie($_SERVER['PHP_SELF'], null)) {
   <input type="submit" value="Submit" />
 </div>  
 </form>
-<?php show_list('request', 0, true, false); ?>
+<?php show_list('jobs', 0, true, false); ?>
 </body>
 </html>
 <?php } ?>

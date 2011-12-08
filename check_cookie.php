@@ -1,11 +1,14 @@
 <?php
 
+require_once('Users.php');
+
 /**
  * $priv is the minimum privilege level required to view the page
  */
 function check_cookie($referer, $priv) {
   if (isset($_COOKIE['user'])) {
-    if (!$priv || $_COOKIE['privileges'] > $priv) {
+    $user = new Users();
+    if ($user->check_perm($_COOKIE['user']) >= $priv) {
       // User exists and has privileges.
       setcookie('referer', null);
       return true;

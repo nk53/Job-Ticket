@@ -1,27 +1,18 @@
 <?php
 
+require_once('Users.php');
+
 if (isset($_POST['user'])) {
   $username = $_POST['user'];
   $password = $_POST['password'];
-  // Connect to MySQL
-  $link = mysql_connect('localhost', 'nakern', 'nakern')
-	or die('Could not connect: ' . mysql_error());
-  // Select Database
-  mysql_select_db('nakern') or die('Could not select database');
-
-  // Query Database
-  $query = "SELECT * FROM users WHERE users.name='$username' " .
-           "AND users.password='$password';";
-  $result = mysql_query($query) or die('Query failed: ' . mysql_error());
   
-  // Read first result
-  $user = mysql_fetch_assoc($result);
+  $user = new Users();
+  $uid = $user->check_user($username, $password);
   
-  if ($user) {
+  if ($uid > 0) {
     // Give user login cookie, or FALSE if login failed
-    setcookie('user', $user['name']);
-    setcookie('uid', $user['uid']);
-    setcookie('privileges', $user['privileges']);
+    setcookie('user', $_POST['user']);
+    setcookie('uid', $uid);
     //echo $_COOKIE['referer'];
     // Return user to home page
     header('Location: '.$_COOKIE['referer']);

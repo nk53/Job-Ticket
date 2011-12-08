@@ -5,7 +5,7 @@ require_once('Request.php');
 require_once('Assign.php');
 require_once('Users.php');
 
-if (check_cookie($_SERVER['PHP_SELF'], 2)) {
+if (check_cookie($_SERVER['PHP_SELF'], 3)) {
   $row_size = '1';
   if (!empty($_POST)) {
     // Update the 'approved' property
