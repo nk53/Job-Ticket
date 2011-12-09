@@ -58,9 +58,9 @@ class Jobs extends DataObject {
   /**
    * Takes $_POST and updates it into the Jobs table
    */
-  public function update_job($post) {
+  public function update_job($post, $id) {
     $args = array(
-      $_GET['id'],
+      $id,
       $post['description'],
       $post['dueDate'],
       $post['contactNumber'],
