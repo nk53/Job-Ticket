@@ -15,6 +15,7 @@ class Jobs extends DataObject {
     'hoursEstimate' => 'decimal',
     'dateEstimate' => 'date',
     'completed' => 'tinyint',
+    'contactNumber' => 'varchar',
   );
   protected $table = 'Jobs';
   
@@ -29,6 +30,7 @@ class Jobs extends DataObject {
   public $hoursEstimate;
   public $dateEstimate;
   public $completed;
+  public $contactNumber;
 
   public static $approved = array(
     -1 => 'Denied',
@@ -38,6 +40,38 @@ class Jobs extends DataObject {
   
   public function approved($i) {
     return self::$approved[$i];
+  }
+  
+  /**
+   * Takes $_POST and inserts it into the Jobs table
+   */
+  public function insert_job($post) {
+    $args = array(
+      $_COOKIE['uid'],
+      $post['description'],
+      parse_date($post),
+      str_replace('-', '', $post['phone']),
+    );
+    $this->call_procedure('insert_job', $args);
+  }
+  
+  /**
+   * Takes $_POST and updates it into the Jobs table
+   */
+  public function update_job($post) {
+    $args = array(
+      $_GET['id'],
+      $post['description'],
+      $post['dueDate'],
+      $post['contactNumber'],
+      $post['assignedUserId'],
+      $post['status'],
+      $post['costEstimated'],
+      $post['hoursEstimated'],
+      $post['dateEstimated'],
+      $post['completed'],
+    );
+    $this->call_procedure('update_job', $args);
   }
   
 }

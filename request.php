@@ -11,13 +11,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) {
   $phone = parse_phone($user->phone);
   if (!empty($_POST)) {
     $job = new Jobs();
-    $job->userId = $_COOKIE['uid'];
-    // Remove '-' from phone number.
-    $job->description = $_POST['description'];
-    // Force date into correct format.
-    $job->dueDate = parse_date($_POST);
-    $job->insert();
-    //header('Location: index.php?conf=true');
+    $job->insert_job($_POST);
   }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -68,7 +62,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) {
   <input type="submit" value="Submit" />
 </div>  
 </form>
-<?php show_list('jobs', 0, true, false); ?>
+<?php show_list('Jobs', NO_HIGHLIGHT, LIMIT_TO_USER, NO_EDIT); ?>
 </body>
 </html>
 <?php } ?>

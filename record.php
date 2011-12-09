@@ -1,7 +1,7 @@
 <?php
 require_once('check_cookie.php');
 require_once('show_list.php');
-require_once('Assign.php');
+require_once('Records.php');
 require_once('Jobs.php');
 require_once('Users.php');
 if (check_cookie($_SERVER['PHP_SELF'], 2)) {
@@ -41,34 +41,28 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
   $hours = '';
   $materials = '';
   $cost = '';
-  if ($aid) {
-    $asn = new Assign();
-    $asn->id = $aid;
-    $asn->find();
-    $req = new Jobs();
-    $req->id = $asn->rid;
-    $req->find();
-    $requestor = $req->name;
-    $requestor_phone = parse_phone($req->phone);
-    $deadline = $asn->complete;
-    $description = $req->description;
-  } else if ($id) {
-    $rec = new Record();
-    $rec->id = $id;
-    $rec->find();
-    $asn = new Assign();
-    $asn->id = $rec->aid;
-    $asn->find();
-    $req = new Jobs();
-    $req->id = $asn->rid;
-    $req->find();
-    $requestor = $req->name;
-    $requestor_phone = parse_phone($req->phone);
-    $deadline = $asn->complete;
-    $description = $req->description;
-    $hours = $rec->hours;
-    $materials = $rec->materials;
-    $cost = '$'.$rec->cost;
+  $row_size = '1';
+  if (strlen($aid)) {
+    $job = new Jobs();
+    $job->get($aid);
+    $user = new Users();
+    $requestor = $user->user_name($job->userId);
+    $requestor_phone = parse_phone($job->contactNumber);
+    $deadline = $job->dueDate;
+    $description = $job->description;
+    $row_size = 1 + strlen($description) / 40;
+  } else if (strlen($id)) {
+    $job = new Jobs();
+    $job->get($id);
+    $user = new Users();
+    $requestor = $user->user_name($job->userId);
+    $requestor_phone = parse_phone($job->contactNumber);
+    $deadline = $job->dueDate;
+    $description = $job->description;
+    $hours = $job->hoursEstimate;
+    $materials = $job->materials;
+    $cost = '$'.$job->costEstimate;
+    $row_size = 1 + strlen($description) / 40;
   }
 
 ?>
@@ -105,7 +99,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
         </tr>
         <tr>
           <td>Description</td>
-          <td><textarea rows="10" cols="40" disabled><?php echo $description ?></textarea></td>
+          <td><textarea rows="<?php echo $row_size ?>" cols="40" disabled><?php echo $description ?></textarea></td>
         </tr>
         <tr><td>Date:</td><td>
         <select id="year" name="year"></select>
@@ -131,8 +125,8 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
       <input type="submit" value="Submit" />
     </div>  
   </form>
-  <?php show_list('assign', $aid); ?>
-  <?php show_list('record', $id); ?>
+  <?php show_list('Records', $aid); ?>
+  <?php show_list('Jobs', $id); ?>
 </body>
 </html>
 <?php } ?>

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @file Users.php
+ * 
+ * This file defines the class that interfaces with the Users table.
+ */
 
 require_once('DataObject.php');
 
@@ -11,9 +16,11 @@ class Users extends DataObject {
   public $accessRights;
   public $userId;
   
-  public $table = 'Users';
+  public $primary = 'userId';
   
-  public $fields = array(
+  protected $table = 'Users';
+  
+  protected $fields = array(
     'username' => 'varchar',
     'password' => 'varchar',
     'fullName' => 'varchar',
@@ -38,20 +45,20 @@ class Users extends DataObject {
     return array_shift($uid);
   }
   
-  public function check_perm($user) {
-    $args = array($user);
+  public function check_perm($uid) {
+    $args = array($uid);
     $permission = $this->call_function('check_permission', $args);
     return array_shift($permission);
   }
   
-  public function user_name($username) {
-    $args = array($username);
+  public function user_name($uid) {
+    $args = array($uid);
     $fullname = $this->call_function('user_name', $args);
     return array_shift($fullname);
   }
   
-  public function user_phone($username) {
-    $args = array($username);
+  public function user_phone($uid) {
+    $args = array($uid);
     $phone = $this->call_function('user_phone', $args);
     return array_shift($phone);
   }

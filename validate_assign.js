@@ -10,8 +10,8 @@ function validate() {
 //Register event handlers
 function loadEventHandlers() {
 	document.getElementById('form').onsubmit = validate;
-	load_date();
-	$('#assign_to').load('get_users.php', function(r, s, xmlRequest) {
-		$('#assign_to').val(r);
-	});
+	//load_date();
+	//$('#assign_to').load('get_users.php', function(r, s, xmlRequest) {
+	//	$('#assign_to').val(r);
+	//});
 }

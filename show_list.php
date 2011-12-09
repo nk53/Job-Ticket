@@ -6,22 +6,34 @@
  * This file contains functions that deal with lists and list components.
  * There are functions to generate list components and to parse certain
  * elements (e.g. phone numbers).
+ * 
+ * Three constants are defined:
+ *   NO_HIGHLIGHT  == null
+ *   LIMIT_TO_USER == true
+ *   NO_EDIT       == false
+ * You can pass these as arguments to show_list().
  */
 
-require_once('Assign.php');
+define('NO_HIGHLIGHT', null);
+define('LIMIT_TO_USER', true);
+define('NO_EDIT', false);
+
 require_once('Jobs.php');
+require_once('Records.php');
 require_once('Record.php');
 require_once('Users.php');
+require_once('Workers.php');
 
 /**
  * Generate a list from information in a table
  * 
  * @param $list
  *   A string indicating the list to be generated: 'assign', 'history',
- *   'record', or 'jobs'.
+ *   'Record', or 'Jobs'.
  * 
  * @param $id
- *   The id of the item to be highlighted (usually the selected item).
+ *   The id of the item to be highlighted (usually the selected item)
+ *   or NO_HIGHLIGHT (null) if no item is to be highlighted.
  * 
  * @param $limit_to_user
  *   Defaults to null. Any true value makes the 'jobs' list only show
@@ -35,33 +47,26 @@ function show_list($list, $id, $limit_to_user=null, $edit=true) {
   $prev = '';
   $next = '';
   $id_list = array();
-  if ($list == 'assign') {  
-    $do = new Assign();
-    $query = "SELECT assign.* FROM assign, jobs " .
-             "WHERE jobs.id = assign.rid " .
-             "AND jobs.approved = TRUE " .
-             "ORDER BY assign.id";
-    $do->query($query);
-  } else if ($list == 'history') {
-    $do = new Jobs();
-    $do->find(false);
-  } else if ($list == 'record') {
-    $do = new Record();
-    $do->find(false);
-  } else if ($list == 'jobs') {
-    $do = new Jobs();
+  $do = new $list();
+  $p_key = $do->primary;
+  // strlen($var) returns false when $var is null or ''
+  //if (strlen($id)) {
+  //  $do->$p_key = $id;
+  //}
+  if ($list == 'Jobs') {
     if ($limit_to_user) {
       $do->userId = $_COOKIE['uid'];
       $do->limit(10);
       $do->order_by('jobId DESC');
+    } else {
+      $do->approved = 0;
     }
-    $do->find(false);
-    $p_key = $do->primary; // Primary key
   }
+  $do->find(false);
   show_header($list, $edit);
 
   // Keep track of even/odd rows and prev/next list items
-  for ($i=1; $do->rows(); $i++) {
+  for ($i=0; $do->rows(); $i++) {
     $is_selected = ($do->$p_key == $id) ? ' selected' : '';
     $id_list[] = $do->$p_key;
     echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit);
@@ -110,7 +115,7 @@ function show_header($list, $edit) { ?>
   <th>Approved</th>
   <th>View</th>
 </tr>
-<?php } else if ($list == 'jobs') {
+<?php } else if ($list == 'Jobs') {
 ?>
 <tr>
   <th>Job Id</th>
@@ -123,15 +128,13 @@ function show_header($list, $edit) { ?>
   <th>Edit</th>
 <?php endif; ?>
 </tr>
-<?php } else if ($list == 'record') { ?>
+<?php } else if ($list == 'Records') { ?>
 <tr>
   <th>Record Id</th>
-  <th>Assignment Id</th>
-  <th>Assigned To</th>
-  <th>Date of Work</th>
-  <th>Hours</th>
-  <th>Materials</th>
-  <th>Cost</th>
+  <th>Job Id</th>
+  <th>Hours Worked</th>
+  <th>Material Cost</th>
+  <th>Date Completed</th>
   <th>Edit</th>
 </tr>
 <?php }
@@ -177,7 +180,7 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
       "<td>$approved</td>" .
       "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>View</a></td>" .
     "</tr>";
-  } else if ($list == 'record') {
+  } else if ($list == 'Records') {
     if (strlen($do->materials) > 23) {
       $materials = substr($do->materials, 0, 20)."...";
     } else {
@@ -199,7 +202,7 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
       "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>Edit</a></td>" .
     "</td>";
       
-  } else if ($list == 'jobs') {
+  } else if ($list == 'Jobs') {
     // Get the name of the person who submitted the job
     $user = new Users();
     $user->userId = $do->userId;
@@ -219,7 +222,7 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
   <td><?php echo $description ?></td>
   <td><?php echo $approved ?></td>
 <?php if ($edit): ?>
-  <td><a href='<?php echo $_SERVER['PHP_SELF'].'?id='.$do->id ?>'>Edit</a></td>
+  <td><a href='<?php echo $_SERVER['PHP_SELF'].'?id='.$do->jobId ?>'>Edit</a></td>
 <?php endif; ?>
 </tr>
 <?
@@ -246,6 +249,54 @@ function parse_date($d) {
   $year = $d['year'];
   $time = strtotime("$day $month $year");
   return date('Y-m-d', $time);
+}
+
+/**
+ * Takes a date string of the form YYYY-MM-DD and returns an HTML select
+ * 
+ * @param d
+ *   The YYYY-MM-DD date string.
+ */
+function date_option($d) {
+  $year = substr($d, 0, 4);
+  $month = substr($d, 5, 2);
+  $day = substr($d, 8, 2);
+  $select = '<select id="year" name="year">';
+  // Construct the year options
+  for ($i=0; $i<5; $i++) {
+    $select .= '<option value="'.($year+$i).'">'.($year+$i).'</option>';
+  }
+  $select .= '</select><select id="month" name="month">';
+  // Construct month options
+  for ($i=1; $i<13; $i++) {
+    $month_name = date('F', strtotime("$year-$i-$day"));
+    $selected = ($month*1 == $i) ? 'selected="selected"' : '' ;
+    $select .= "<option id='month_$i' $selected value='$month_name'>$month_name</option>";
+  }
+  $select .= '</select><select id="day" name="day">';
+  // Construct day options
+  $days_in_month = date('t', strtotime($d));
+  for ($i=1; $i<=$days_in_month; $i++) {
+    $selected = ($day*1 == $i) ? 'selected="selected"' : '';
+    $select .= "<option id='day_$i' $selected value='$i'>$i</option>";
+  }
+  $select .= '</select>';
+  return $select;
+}
+
+/**
+ * Returns a select containing the names of all workers
+ */ 
+function assign_to_option() {
+  $do = new Workers();
+  $do->find(false);
+  $options = '';
+  while ($do->rows()) {
+    $user = new Users();
+    $user->get($do->userId);
+    $options .= "<option value='{$do->userId}'>{$user->fullName}</option>";
+  }
+  return $options;
 }
 
 ?>

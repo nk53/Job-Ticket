@@ -1,15 +1,14 @@
 <?php
 require_once('check_cookie.php');
 require_once('show_list.php');
-require_once('Request.php');
-require_once('Assign.php');
+require_once('Jobs.php');
 require_once('Users.php');
 
 if (check_cookie($_SERVER['PHP_SELF'], 3)) {
   $row_size = '1';
   if (!empty($_POST)) {
     // Update the 'approved' property
-    $req = new Request();
+    $job = new Jobs();
     $approved = empty($_POST['approved']) ? 'false' : 'true';
     $query = 'UPDATE request SET approved=' . $approved .
              ' WHERE id=' . $_POST['rid'];
@@ -40,26 +39,35 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
   $day = '';
   $desc = '';
   $checked = '';
+  $est_date = '';
   $id = (isset($_GET['id'])) ? $_GET['id'] : null;
-  if ($id) {
-    $req = new Request();
-    $req->id = $id;
-    $req->find();
+  if (strlen($id)) {
+    $job = new Jobs();
+    $job->jobId = $id;
+    $job->find();
+    
+    $user = new Users();
+    $user->get($job->userId);
   
-    $name = $req->name;
-    $phone = parse_phone($req->phone);
-    $y = substr($req->deadline, 0, 4);
-    $m = substr($req->deadline, 5, 2);
-    $d = substr($req->deadline, 8, 2);
+    $name = $user->fullName;
+    $phone = parse_phone($user->phone);
+    $y = substr($job->dueDate, 0, 4);
+    $m = substr($job->dueDate, 5, 2);
+    $d = substr($job->dueDate, 8, 2);
     $time = strtotime("$y/$m/$d");
     $year = '<option>'.date('Y', $time).'</option>';
     $month = '<option>'.date('F', $time).'</option>';
     $day = '<option>'.date('j', $time).'</option>';
-    $desc = $req->description;
-    $checked = ($req->approved) ? 'checked="checked"' : '';
-    
+    $desc = $job->description;
+    $status = $job->status;
+    if (strtotime($job->dateEstimate)) {
+      $est_date = date_option($job->dateEstimate);
+    }
     //update size of textarea to fit description
     $row_size = 1 + strlen($desc) / 40;
+  }
+  if (!$est_date) {
+    $est_date = date_option(date('Y-m-d'));
   }
 ?>
 <!DOCTYPE html>
@@ -113,36 +121,21 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
       <tr>
         <td>Estimated date of completion:</td>
         <td>
-          <select id="year" name="year"></select>
-          <select id="month" name="month">
-            <option id="month_0" value="January">January</option>
-            <option id="month_1" value="February">February</option>
-            <option id="month_2" value="March">March</option>
-            <option id="month_3" value="April">April</option>
-            <option id="month_4" value="May">May</option>
-            <option id="month_5" value="June">June</option>
-            <option id="month_6" value="July">July</option>
-            <option id="month_7" value="August">August</option>
-            <option id="month_8" value="September">September</option>
-            <option id="month_9" value="October">October</option>
-            <option id="month_10" value="November">November</option>
-            <option id="month_11" value="December">December</option>
-          </select>
-          <select id="day" name="day"></select>
+          <?php echo $est_date ?>
         </td>
       </tr>
       <tr>
         <td>Assign to:</td>
-        <td><select name="assign_to" id="assign_to"></select></td>
+        <td><select name="assignedUserId" id="assign_to"><?php echo assign_to_option() ?></select></td>
       </tr>
       <tr>
           <td>Approved? </td>
           <td>
             <!--<input name="approved" type="checkbox" id="approved" <?php echo $checked ?> />-->
             <select>
-              <option>Approve</option>
-              <option>Review Later</option>
-              <option>Deny</option>
+              <option<?php echo ($job->status == 1) ? ' selected="selected"' : '' ?>>Approve</option>
+              <option<?php echo ($job->status == 0) ? ' selected="selected"' : '' ?>>Review Later</option>
+              <option<?php echo ($job->status == -1) ? ' selected="selected"' : '' ?>>Deny</option>
             </select>
           </td>
         </tr>
@@ -150,7 +143,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
       <input type="submit" value="Submit" />
     </div>  
   </form>
-  <?php show_list('request', $id); ?>
+  <?php show_list('Jobs', $id); ?>
 </body>
 </html>
 <?php } ?>

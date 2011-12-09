@@ -6,7 +6,7 @@
 }
 
 .even {
-	background-color: white;
+	background-color: #EEE;
 }
 
 .list {
@@ -33,7 +33,7 @@
 }
 
 .odd {
-	background-color: #EEE;
+	background-color: white;
 }
 
 .selected {

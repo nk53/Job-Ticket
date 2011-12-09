@@ -8,7 +8,7 @@ require_once('Users.php');
 function check_cookie($referer, $priv) {
   if (isset($_COOKIE['user'])) {
     $user = new Users();
-    if ($user->check_perm($_COOKIE['user']) >= $priv) {
+    if ($user->check_perm($_COOKIE['uid']) >= $priv) {
       // User exists and has privileges.
       setcookie('referer', null);
       return true;

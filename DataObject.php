@@ -21,7 +21,9 @@ class DataObject {
   protected $table;
   protected $limit;
   protected $order_by;
-
+  
+  public $primary; // Primary Key
+  
   protected function db_connect() {
     $database = parse_ini_file("db.ini", true);
     $database = $database['Database'];
@@ -42,7 +44,7 @@ class DataObject {
   }
 
   public function query($query, $fetch_row=true) {
-    echo "<pre>$query</pre><br />";
+    //echo "<pre>$query</pre><br />";
     $this->db_connect();
     if (isset($this->order_by) && !empty ($this->order_by)) {
       $query .= ' ORDER BY ' . $this->order_by;
@@ -66,11 +68,27 @@ class DataObject {
     foreach ($args as $arg) {
       $query .= "'$arg', ";
     }
-    $query = substr($query, 0, -2);
+    if (!empty($args)) {
+      $query = substr($query, 0, -2);
+    }
     $query .= ")";
     $result = mysql_query($query)
       or die('Query failed: ' . mysql_error());
     return mysql_fetch_row($result);
+  }
+  
+  public function call_procedure($proc, $args=array()) {
+    $this->db_connect();
+    $query = "CALL $proc(";
+    foreach ($args as $arg) {
+      $query .= "'$arg', ";
+    }
+    if (!empty($args)) {
+      $query = substr($query, 0, -2);
+    }
+    $query .= ")";
+    $result = mysql_query($query)
+      or die('Query failed: ' . mysql_error());
   }
   
   protected function set_vals($values=array()) {
@@ -124,6 +142,12 @@ class DataObject {
     $query .= $cols;
     $this->query($query);
   }*/
+  
+  public function get($id) {
+    $primary = $this->primary;
+    $this->$primary = $id;
+    $this->find();
+  }
   
   public function find($fetch_row=true) {
     $query = "SELECT * FROM {$this->table}";
