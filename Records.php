@@ -22,6 +22,16 @@ class Records extends DataObject {
   public $materialCost;
   public $dateCompleted;
   
+  public function update_record($post) {
+    $args = array(
+      $post['rid'],
+      $post['hoursEstimated'],
+      $post['costEstimated'],
+      parse_date($post),
+    );
+    $this->call_procedure('update_record', $args);
+  }
+  
   public function get_actual($jobId) {
     $rec = new Records();
     $rec->jobId = $jobId;
