@@ -43,8 +43,7 @@ require_once('Workers.php');
  *   Defaults to true. Use false if you don't want to show the last
  *   column (called 'edit' or 'view').
  */
-function show_list($list, $id, $options) {
-  print_r($options);
+function show_list($list, $id, $options=array()) {
   $edit = (!is_null($options['edit'])) ? $options['edit'] : true;
   $view = (!is_null($options['view'])) ? $options['view'] : false;
   $prev = '';
@@ -70,29 +69,32 @@ function show_list($list, $id, $options) {
     // We're not on the history screen
     $do->find(false);
   } else if ($list == 'Jobs') {
-    echo "hi";
     // We are on the history screen
     $do->query('SELECT * FROM Jobs WHERE status != 0 OR completed = 1');
   }
   show_header($list, $edit, $view);
-
-  // Keep track of even/odd rows and prev/next list items
-  for ($i=0; $do->rows(); $i++) {
-    $is_selected = ($do->$p_key == $id) ? ' selected' : '';
-    $id_list[] = $do->$p_key;
-    echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit, $view);
+  
+  // If this is the records form and no job has been selected,
+  // don't only show the records table header
+  if ($list != 'Records' || strlen($id)) {
+    // Keep track of even/odd rows and prev/next list items
+    for ($i=0; $do->rows(); $i++) {
+      $is_selected = ($do->$p_key == $id) ? ' selected' : '';
+      $id_list[] = $do->$p_key;
+      echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit, $view);
+    }
+    
+    // Set $prev and $next
+    for($j=0;$j<count($id_list);$j++){
+      if ($id_list[$j] == $id && $j > 0){
+        $prev = $id_list[$j-1];
+      }
+      if ($id_list[$j] == $id && $j < count($id_list)) {
+        $next = $id_list[$j+1];
+      }
+    }
   }
   
-  // Set $prev and $next
-  for($j=0;$j<count($id_list);$j++){
-    if ($id_list[$j] == $id && $j > 0){
-      $prev = $id_list[$j-1];
-    }
-    if ($id_list[$j] == $id && $j < count($id_list)) {
-      $next = $id_list[$j+1];
-    }
-  }
-
   echo "</form></table></div>";
   echo "<script>var prev = '$prev'; var next = '$next';</script>";
 }
