@@ -38,6 +38,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
   $requestor_phone = '';
   $deadline = '';
   $description = '';
+  $date = '';
   $hours = '';
   $materials = '';
   $cost = '';
@@ -48,6 +49,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
     $job = new Jobs();
     $job->get($rec->jobId);
     $id = $job->jobId;
+    $date = date_option(date($rec->dateCompleted));
     $hours = $rec->hoursWorked;
     $materials = $rec->materialsUsed;
     $cost = '$'.$rec->materialCost;
@@ -67,6 +69,9 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
     $description = $job->description;
     $materials = $job->materials;
     $row_size = 1 + strlen($description) / 40;
+  }
+  if (!$date) {
+    $date = date_option(date('Y-m-d'));
   }
 
 ?>
@@ -105,23 +110,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
           <td>Description</td>
           <td><textarea rows="<?php echo $row_size ?>" cols="40" disabled><?php echo $description ?></textarea></td>
         </tr>
-        <tr><td>Date:</td><td>
-        <select id="year" name="year"></select>
-        <select id="month" name="month">
-          <option id="month_0" value="January">January</option>
-          <option id="month_1" value="February">February</option>
-          <option id="month_2" value="March">March</option>
-          <option id="month_3" value="April">April</option>
-          <option id="month_4" value="May">May</option>
-          <option id="month_5" value="June">June</option>
-          <option id="month_6" value="July">July</option>
-          <option id="month_7" value="August">August</option>
-          <option id="month_8" value="September">September</option>
-          <option id="month_9" value="October">October</option>
-          <option id="month_10" value="November">November</option>
-          <option id="month_11" value="December">December</option>
-        </select>
-        <select id="day" name="day"></select></td></tr>
+        <tr><td>Date:</td><td><?php echo $date ?></td></tr>
         <tr><td>Number of hours:</td><td><input name="hours" id="hours" type="text" value="<?php echo $hours ?>"/></td></tr>
         <tr><td>Materials used:</td><td><textarea name="materials" id="materials" rows="3" cols="40"><?php echo $materials ?></textarea></td></tr>
         <tr><td>Cost of materials:</td><td><input name="cost" id="cost" type="text" value="<?php echo $cost ?>" /></td></tr>
