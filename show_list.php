@@ -65,7 +65,7 @@ function show_list($list, $id, $options=array()) {
     } else {
       $do->status = 0;
     }
-  } else if ($list == 'Records') {
+  } else if ($list == 'Records' && strlen($id)) {
     $do->jobId = $id;
   }
   // Don't show pending in history screen
