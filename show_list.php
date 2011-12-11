@@ -61,6 +61,7 @@ function show_list($list, $id, $options=array()) {
       $do->limit(10);
       $do->order_by('jobId DESC');
     } else if ($options['assigned_to_user']) {
+      $do->completed = 0;
       $do->assignedUserId = $_COOKIE['uid'];
     } else {
       $do->status = 0;
