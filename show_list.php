@@ -65,7 +65,15 @@ function show_list($list, $id, $options) {
       $do->status = 0;
     }
   }
-  $do->find(false);
+  // Don't show pending in history screen
+  if (is_null($options['pending']) || $options['pending']) {
+    // We're not on the history screen
+    $do->find(false);
+  } else if ($list == 'Jobs') {
+    echo "hi";
+    // We are on the history screen
+    $do->query('SELECT * FROM Jobs WHERE status != 0 OR completed = 1');
+  }
   show_header($list, $edit, $view);
 
   // Keep track of even/odd rows and prev/next list items
@@ -126,7 +134,7 @@ function show_header($list, $edit, $view) { ?>
   <th>Phone</th>
   <th>Deadline</th>
   <th>Description</th>
-  <th>Approved</th>
+  <th>Status</th>
 <?php if ($edit): ?>
   <th>Edit</th>
 <?php endif; ?>
