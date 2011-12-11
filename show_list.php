@@ -70,7 +70,7 @@ function show_list($list, $id, $options=array()) {
     $do->find(false);
   } else if ($list == 'Jobs') {
     // We are on the history screen
-    $do->query('SELECT * FROM Jobs WHERE status != 0 OR completed = 1');
+    $do->query('SELECT * FROM Jobs WHERE status != 0 OR completed = 1', false);
   }
   show_header($list, $edit, $view);
   
