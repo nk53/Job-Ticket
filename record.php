@@ -104,17 +104,29 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
           <td><input type="text" value="<?php echo $requestor_phone ?>" disabled /></td>
         </td>
         <tr>
-          <td>Deadline</td>
+          <td>Deadline:</td>
           <td><input type="text" value="<?php echo $deadline ?>" disabled /></td>
         </tr>
         <tr>
-          <td>Description</td>
+          <td>Description:</td>
           <td><textarea rows="<?php echo $row_size ?>" cols="40" disabled><?php echo $description ?></textarea></td>
         </tr>
-        <tr><td>Date:</td><td><?php echo $date ?></td></tr>
-        <tr><td>Number of hours:</td><td><input name="hours" id="hours" type="text" value="<?php echo $hours ?>"<?php echo $disabled ?> /></td></tr>
-        <tr><td>Materials used:</td><td><textarea name="materials" id="materials" rows="3" cols="40"<?php echo $disabled ?>><?php echo $materials ?></textarea></td></tr>
-        <tr><td>Cost of materials:</td><td><input name="cost" id="cost" type="text" value="<?php echo $cost ?>"<?php echo $disabled ?> /></td></tr>
+        <tr>
+          <td>Date:</td>
+          <td><?php echo $date ?></td>
+        </tr>
+        <tr>
+          <td>Number of hours:</td>
+          <td><input name="hours" id="hours" type="text" value="<?php echo $hours ?>"<?php echo $disabled ?> /></td>
+       </tr>
+        <tr>
+          <td>Materials used:</td>
+          <td><textarea name="materials" id="materials" rows="3" cols="40"<?php echo $disabled ?>><?php echo $materials ?></textarea></td>
+       </tr>
+        <tr>
+          <td>Cost of materials:</td>
+          <td><input name="cost" id="cost" type="text" value="<?php echo $cost ?>"<?php echo $disabled ?> /></td>
+        </tr>
       </table>
       <input type="submit" value="Submit" />
     </div>  
