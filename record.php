@@ -53,6 +53,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
     $hours = $rec->hoursWorked;
     $materials = $rec->materialsUsed;
     $cost = '$'.$rec->materialCost;
+    $completed = ($job->completed) ? 'checked="checked"' : '';
     $user = new Users();
     $requestor = $user->user_name($job->userId);
     $requestor_phone = parse_phone($job->contactNumber);
@@ -126,6 +127,10 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
         <tr>
           <td>Cost of materials:</td>
           <td><input name="cost" id="cost" type="text" value="<?php echo $cost ?>"<?php echo $disabled ?> /></td>
+        </tr>
+        <tr>
+          <td>Completed:</td>
+          <td><input type="checkbox"<?php echo $completed ?> /></td>
         </tr>
       </table>
       <input type="submit" value="Submit" />
