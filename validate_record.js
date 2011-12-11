@@ -12,5 +12,5 @@ function validate() {
 //Register event handlers
 function loadEventHandlers() {
 	document.getElementById("form").onsubmit = validate;
-	load_date();
+	//load_date();
 }

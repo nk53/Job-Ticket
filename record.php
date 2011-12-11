@@ -49,7 +49,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
     $job = new Jobs();
     $job->get($rec->jobId);
     $id = $job->jobId;
-    $date = date_option(date($rec->dateCompleted));
+    $date = date_option($rec->dateCompleted);
     $hours = $rec->hoursWorked;
     $materials = $rec->materialsUsed;
     $cost = '$'.$rec->materialCost;
