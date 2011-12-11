@@ -72,7 +72,7 @@ function show_list($list, $id, $options) {
   for ($i=0; $do->rows(); $i++) {
     $is_selected = ($do->$p_key == $id) ? ' selected' : '';
     $id_list[] = $do->$p_key;
-    echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit);
+    echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit, $view);
   }
   
   // Set $prev and $next
@@ -149,7 +149,7 @@ function show_header($list, $edit, $view) { ?>
 }
 // Function end: show_header
 
-function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
+function echo_row($list, $do, $even_or_odd, $is_selected, $edit, $view) {
   if ($list == 'assign') {
     // Get fullname of requestor
     $req = new Jobs();
@@ -209,6 +209,12 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
     "</td>";
       
   } else if ($list == 'Jobs') {
+    $a = "<a href='{$_SERVER['PHP_SELF']}?id={$do->jobId}'>";
+    if ($edit) {
+      $a .= 'Edit</a>';
+    } else if ($view) {
+      $a .= 'View</a>';
+    }
     // Get the name of the person who submitted the job
     $user = new Users();
     $user->userId = $do->userId;
@@ -227,8 +233,8 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
   <td><?php echo $do->dueDate ?></td>
   <td><?php echo $description ?></td>
   <td><?php echo $approved ?></td>
-<?php if ($edit): ?>
-  <td><a href='<?php echo $_SERVER['PHP_SELF'].'?id='.$do->jobId ?>'>Edit</a></td>
+<?php if ($edit || $view): ?>
+  <td><?php echo $a ?></td>
 <?php endif; ?>
 </tr>
 <?
