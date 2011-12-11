@@ -9,27 +9,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
   if (!empty($_POST)) {
     // Update the 'approved' property
     $job = new Jobs();
-    $approved = empty($_POST['approved']) ? 'false' : 'true';
-    $query = 'UPDATE request SET approved=' . $approved .
-             ' WHERE id=' . $_POST['rid'];
-    $req->query($query);
-    
-    // What's the id of the person this job is assigned to?
-    $user = new Users();
-    $user->fullname = $_POST['assign_to'];
-    $user->find();
-    $aid = $user->uid;
-    
-    // Insert the new assignment
-    $asn = new Assign();
-    $asn->rid = $_POST['rid'];
-    $asn->hours = $_POST['hours'];
-    $asn->cost = str_replace('$', '', $_POST['cost']);
-    $asn->complete = parse_date($_POST);
-    $asn->aid = $aid;
-    $asn->insert();
-  
-    header('Location: index.php');
+    $job->update_job_approval($_POST);
   }
   // Initialize values!
   $name = '';
@@ -39,6 +19,8 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
   $day = '';
   $desc = '';
   $checked = '';
+  $est_cost = '';
+  $est_hours = '';
   $est_date = '';
   $id = (isset($_GET['id'])) ? $_GET['id'] : null;
   if (strlen($id)) {
@@ -47,10 +29,9 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
     $job->find();
     
     $user = new Users();
-    $user->get($job->userId);
-  
-    $name = $user->fullName;
-    $phone = parse_phone($user->phone);
+    $name = $user->user_name($job->userId);
+    
+    $phone = parse_phone($job->contactNumber);
     $y = substr($job->dueDate, 0, 4);
     $m = substr($job->dueDate, 5, 2);
     $d = substr($job->dueDate, 8, 2);
@@ -60,6 +41,8 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
     $day = '<option>'.date('j', $time).'</option>';
     $desc = $job->description;
     $status = $job->status;
+    $est_hours = $job->hoursEstimate;
+    $est_cost = $job->costEstimate;
     if (strtotime($job->dateEstimate)) {
       $est_date = date_option($job->dateEstimate);
     }
@@ -69,6 +52,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
   if (!$est_date) {
     $est_date = date_option(date('Y-m-d'));
   }
+  $options = array('pending' => true);
 ?>
 <!DOCTYPE html>
 <head>
@@ -101,22 +85,22 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
       <tr>
         <td>Deadline:</td>
         <td>
-          Year: <select disabled type="select"><?php echo $year ?></select>
-          Month: <select disabled type="select"><?php echo $month ?></select>
-          Day: <select disabled type="select"><?php echo $day ?></select>
+          Year: <select name="due_year" disabled type="select"><?php echo $year ?></select>
+          Month: <select name="due_month" disabled type="select"><?php echo $month ?></select>
+          Day: <select name="due_day" disabled type="select"><?php echo $day ?></select>
         </td>
       </tr>
       <tr>
         <td>Description:</td>
-        <td><textarea disabled rows="<?php echo $row_size ?>" cols="40"><?php echo $desc ?></textarea></td>
+        <td><textarea name="description" disabled rows="<?php echo $row_size ?>" cols="40"><?php echo $desc ?></textarea></td>
         </tr>
       <tr>
         <td>Estimated number of hours to complete:</td>
-        <td><input id="hours" name="hours" type="text" /></td>
+        <td><input id="hours" name="hoursEstimated" class="num" type="text" value="<?php echo $est_hours ?>" /></td>
       </tr>
       <tr>
         <td>Estimated total cost:</td>
-        <td><input id="cost" name="cost" type="text" /></td>
+        <td><input id="cost" name="costEstimated" class="num" type="text" value="<?php echo $est_cost ?>" /></td>
       </tr>
       <tr>
         <td>Estimated date of completion:</td>
@@ -132,10 +116,10 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
           <td>Approved? </td>
           <td>
             <!--<input name="approved" type="checkbox" id="approved" <?php echo $checked ?> />-->
-            <select>
-              <option<?php echo ($job->status == 1) ? ' selected="selected"' : '' ?>>Approve</option>
-              <option<?php echo ($job->status == 0) ? ' selected="selected"' : '' ?>>Review Later</option>
-              <option<?php echo ($job->status == -1) ? ' selected="selected"' : '' ?>>Deny</option>
+            <select name="status">
+              <option<?php echo ($job->status == 1) ? ' selected="selected"' : '' ?> value="1">Approve</option>
+              <option<?php echo ($job->status == 0) ? ' selected="selected"' : '' ?> value="0">Review Later</option>
+              <option<?php echo ($job->status == -1) ? ' selected="selected"' : '' ?> value="-1">Deny</option>
             </select>
           </td>
         </tr>
@@ -143,7 +127,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
       <input type="submit" value="Submit" />
     </div>  
   </form>
-  <?php show_list('Jobs', $id); ?>
+  <?php show_list('Jobs', $id, $options); ?>
 </body>
 </html>
 <?php } ?>
