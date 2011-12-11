@@ -43,39 +43,40 @@ $est_cost = '';
 $act_cost = '';
 $checked = '';
 $id = (isset($_GET['id'])) ? $_GET['id'] : null;
-if ($id) {
+$row_size = 1;
+if (strlen($id)) {
   // Get request information
-  $req = new Request();
-  $req->id = $id;
-  $req->find();
-  $name = $req->name;
-  $phone = parse_phone($req->phone);
-  $y = substr($req->deadline, 0, 4);
-  $m = substr($req->deadline, 5, 2);
-  $d = substr($req->deadline, 8, 2);
+  $job = new Jobs();
+  $job->get($id);
+  $user = new Users();
+  $name = $user->user_name($job->userId);
+  $phone = parse_phone($job->contactNumber);
+  $assigned_to = $user->user_name($job->assignedUserId);
+  $assigned_to = "<option>$assigned_to</option>";
+  $y = substr($job->dueDate, 0, 4);
+  $m = substr($job->dueDate, 5, 2);
+  $d = substr($job->dueDate, 8, 2);
   $time = strtotime("$y/$m/$d");
   $year = '<option>'.date('Y', $time).'</option>';
   $month = '<option>'.date('F', $time).'</option>';
   $day = '<option>'.date('j', $time).'</option>';
-  $desc = $req->description;
-  $checked = ($req->approved) ? 'checked="checked"' : '';
+  $desc = $job->description;
+  $status = $job->status;
   // Get estimate information
-  $asn = new Assign();
-  $asn->rid=$id;
-  $asn->find();
-  $est_hours = $asn->hours;
-  $est_cost = $asn->cost;
+  $est_hours = $job->hoursEstimate;
+  $est_cost = $job->costEstimate;
   // Get actual spending information
-  $rec = new Record();
-  // FIX THIS!!!
-  $rec->uid = $asn->rid;
+  $rec = new Records();
+  $rec->jobId = $job->jobId;
   $rec->find(false);
   // Sum spending information together
   while ($rec->rows()) {
     $act_hours += $rec->hours;
     $act_cost += $rec->cost;
   }
+  $row_size = 1 + strlen($desc) / 40;
 }
+$options = array('view' => true, 'edit' => false, 'pending' => false);
 ?>
 <!DOCTYPE html>
 <head>
@@ -112,7 +113,7 @@ if ($id) {
       </tr>
       <tr>
         <td>Description:</td>
-        <td><textarea disabled rows="10" cols="40"><?php echo $desc ?>
+        <td><textarea disabled rows="<?php echo $row_size ?>" cols="40"><?php echo $desc ?>
           </textarea></td>
         </tr>
       <tr>
@@ -154,21 +155,20 @@ if ($id) {
       </tr>
       <tr>
         <td>Assign to:</td>
-        <td><select name="assign_to" id="assign_to"></select></td>
+        <td><select name="assign_to" id="assign_to"><?php echo $assigned_to ?></select></td>
       </tr>
       <tr>
-          <td>Approved? </td>
+          <td>Status:</td>
           <td>
             <input name="approved" type="checkbox" id="approved" <?php echo $checked ?> />
           </td>
         </tr>
       </table>
       <input type="button" value="Prev" id="prev" />
-      <input type="submit" value="Submit" />
       <input type="button" value="Next" id="next" />
     </div>  
   </form>
-  <?php show_list('history', $id); ?>
+  <?php show_list('Jobs', $id, $options); ?>
 </body>
 </html>
 <?php } ?>
