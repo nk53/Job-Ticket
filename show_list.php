@@ -219,7 +219,7 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit, $view) {
       "<td>\${$do->materialCost}</td>" .
       "<td>{$do->dateCompleted}</td>" .
       "<td>$materials</td>" .
-      "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>Edit</a></td>" .
+      "<td><a href='{$_SERVER['PHP_SELF']}?rid={$do->recordId}'>Edit</a></td>" .
     "</td>";
       
   } else if ($list == 'Jobs') {

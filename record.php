@@ -6,12 +6,12 @@ require_once('Jobs.php');
 require_once('Users.php');
 if (check_cookie($_SERVER['PHP_SELF'], 2)) {
   if (!empty($_POST)) {
-    if (!empty($_POST['aid'])) {
+    if (!empty($_POST['rid'])) {
       $asn = new Assign();
-      $asn->id = $_POST['aid'];
+      $asn->id = $_POST['rid'];
       $asn->find();
       $rec = new Record();
-      $rec->aid = $_POST['aid'];
+      $rec->aid = $_POST['rid'];
       $rec->uid = $asn->rid;
       $rec->date = parse_date($_POST);
       $rec->hours = $_POST['hours'];
@@ -43,8 +43,14 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
   $cost = '';
   $row_size = '1';
   if (strlen($rid)) {
+    $rec = new Records();
+    $rec->get($rid);
     $job = new Jobs();
-    $job->get($aid);
+    $job->get($rec->jobId);
+    $id = $job->jobId;
+    $hours = $rec->hoursWorked;
+    $materials = $rec->materialsUsed;
+    $cost = '$'.$rec->materialCost;
     $user = new Users();
     $requestor = $user->user_name($job->userId);
     $requestor_phone = parse_phone($job->contactNumber);
