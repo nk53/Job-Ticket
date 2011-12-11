@@ -44,6 +44,8 @@ require_once('Workers.php');
  *   column (called 'edit' or 'view').
  */
 function show_list($list, $id, $options) {
+  print_r($options);
+  $edit = (!is_null($options['edit'])) ? $options['edit'] : true;
   $prev = '';
   $next = '';
   $id_list = array();
@@ -54,12 +56,12 @@ function show_list($list, $id, $options) {
   //  $do->$p_key = $id;
   //}
   if ($list == 'Jobs') {
-    if ($limit_to_user) {
+    if ($options['limit_to_user']) {
       $do->userId = $_COOKIE['uid'];
       $do->limit(10);
       $do->order_by('jobId DESC');
     } else {
-      $do->approved = 0;
+      $do->status = 0;
     }
   }
   $do->find(false);
