@@ -27,7 +27,6 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
     $name = $user->user_name($job->userId);
     $phone = parse_phone($job->contactNumber);
     $assigned_to = $user->user_name($job->assignedUserId);
-    $assigned_to = "<option>$assigned_to</option>";
     $y = substr($job->dueDate, 0, 4);
     $m = substr($job->dueDate, 5, 2);
     $d = substr($job->dueDate, 8, 2);
@@ -40,7 +39,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
     $status = $job->approved($job->status);
     // Get estimate information
     $est_hours = $job->hoursEstimate;
-    $est_cost = $job->costEstimate;
+    $est_cost = '$'.$job->costEstimate;
     // Get actual spending information
     $rec = new Records();
     $actual = $rec->get_actual($job->jobId);
@@ -110,7 +109,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
       </tr>
       <tr>
         <td>Assigned to:</td>
-        <td><select name="assign_to" id="assign_to"><?php echo $assigned_to ?></select></td>
+        <td><input type="text" name="assign_to" value="<?php echo $assigned_to ?>" disabled /></td>
       </tr>
       <tr>
           <td>Status:</td>

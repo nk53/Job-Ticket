@@ -5,7 +5,6 @@ require_once('Records.php');
 require_once('Jobs.php');
 require_once('Users.php');
 if (check_cookie($_SERVER['PHP_SELF'], 2)) {
-  print_r($_POST);
   if (strlen($_POST)) {
     if (strlen($_POST['rid'])) {
       $rec = new Records();

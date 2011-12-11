@@ -48,11 +48,12 @@ class Jobs extends DataObject {
    * Takes $_POST and inserts it into the Jobs table
    */
   public function insert_job($post) {
+    $phone = preg_replace('/\(|\)|-/', '', $post['phone']);
     $args = array(
       $_COOKIE['uid'],
       $post['description'],
       parse_date($post),
-      str_replace('-', '', $post['phone']),
+      $phone,
     );
     $this->call_procedure('insert_job', $args);
   }

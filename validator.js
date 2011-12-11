@@ -99,10 +99,10 @@ function checkPhone() {
 	var phone = elem.value;
 	
 	//position of match, -1 if no match found
-	var pos = phone.search(/^\d{3}-\d{3}-\d{4}$/);
+	var pos = phone.search(/^((\(\d{3}\))|(\d{3}))-\d{3}-\d{4}$/);
 	if (pos != 0) {
 		alert("Please use the following format:\n" +
-				"555-555-5555");
+				"555-555-5555 or (555)-555-5555");
 		return false;
 	} else {
 		return true;
