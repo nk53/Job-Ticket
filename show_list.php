@@ -46,6 +46,7 @@ require_once('Workers.php');
 function show_list($list, $id, $options) {
   print_r($options);
   $edit = (!is_null($options['edit'])) ? $options['edit'] : true;
+  $view = (!is_null($options['view'])) ? $options['view'] : false;
   $prev = '';
   $next = '';
   $id_list = array();
@@ -65,7 +66,7 @@ function show_list($list, $id, $options) {
     }
   }
   $do->find(false);
-  show_header($list, $edit);
+  show_header($list, $edit, $view);
 
   // Keep track of even/odd rows and prev/next list items
   for ($i=0; $do->rows(); $i++) {
@@ -89,7 +90,7 @@ function show_list($list, $id, $options) {
 }
 
 // Function start: show_header, hides edit/view column if $edit is false
-function show_header($list, $edit) { ?>
+function show_header($list, $edit, $view) { ?>
 <div class="list">
 <table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
@@ -126,8 +127,11 @@ function show_header($list, $edit) { ?>
   <th>Deadline</th>
   <th>Description</th>
   <th>Approved</th>
-<?php if($edit): ?>
+<?php if ($edit): ?>
   <th>Edit</th>
+<?php endif; ?>
+<?php if ($view): ?>
+  <th>View</th>
 <?php endif; ?>
 </tr>
 <?php } else if ($list == 'Records') { ?>
