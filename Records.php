@@ -22,6 +22,23 @@ class Records extends DataObject {
   public $materialCost;
   public $dateCompleted;
   
+  public function get_actual($jobId) {
+    $rec = new Records();
+    $rec->jobId = $jobId;
+    $rec->find(false);
+    while ($rec->rows()) {
+      $hours += $rec->hoursWorked;
+      $cost += $rec->materialCost;
+    }
+    if (strlen($cost)) {
+      $cost = '$'.$cost;
+    }
+    return array(
+      'hours' => $hours,
+      'cost' => $cost,
+    );
+  }
+
 }
 
 ?>
