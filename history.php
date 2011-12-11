@@ -35,8 +35,9 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
     $year = '<option>'.date('Y', $time).'</option>';
     $month = '<option>'.date('F', $time).'</option>';
     $day = '<option>'.date('j', $time).'</option>';
+    $dateEstimate = date_option($job->dateEstimate, true);
     $desc = $job->description;
-    $status = $job->status;
+    $status = $job->approved($job->status);
     // Get estimate information
     $est_hours = $job->hoursEstimate;
     $est_cost = $job->costEstimate;
@@ -109,33 +110,16 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
       </tr>
       <tr>
         <td>Estimated date of completion:</td>
-        <td>
-          <select id="year" name="year"></select>
-          <select id="month" name="month">
-            <option id="month_0" value="January">January</option>
-            <option id="month_1" value="February">February</option>
-            <option id="month_2" value="March">March</option>
-            <option id="month_3" value="April">April</option>
-            <option id="month_4" value="May">May</option>
-            <option id="month_5" value="June">June</option>
-            <option id="month_6" value="July">July</option>
-            <option id="month_7" value="August">August</option>
-            <option id="month_8" value="September">September</option>
-            <option id="month_9" value="October">October</option>
-            <option id="month_10" value="November">November</option>
-            <option id="month_11" value="December">December</option>
-          </select>
-          <select id="day" name="day"></select>
-        </td>
+        <td><?php echo $dateEstimate ?></td>
       </tr>
       <tr>
-        <td>Assign to:</td>
+        <td>Assigned to:</td>
         <td><select name="assign_to" id="assign_to"><?php echo $assigned_to ?></select></td>
       </tr>
       <tr>
           <td>Status:</td>
           <td>
-            <input name="approved" type="checkbox" id="approved" <?php echo $checked ?> />
+            <input name="approved" type="text" id="status" value="<?php echo $status ?>" disabled />
           </td>
         </tr>
       </table>
