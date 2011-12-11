@@ -5,78 +5,53 @@ require_once('Jobs.php');
 require_once('Users.php');
 
 if (check_cookie($_SERVER['PHP_SELF'], 3)) {
-if (!empty($_POST)) {
-  // Update the 'approved' property
-  $req = new Jobs();
-  $approved = empty($_POST['approved']) ? 'false' : 'true';
-  $query = 'UPDATE request SET approved=' . $approved .
-           ' WHERE id=' . $_POST['rid'];
-  $req->query($query);
-  
-  // What's the id of the person this job is assigned to?
-  $user = new Users();
-  $user->fullname = $_POST['assign_to'];
-  $user->find();
-  $aid = $user->uid;
-  
-  // Insert the new assignment
-  $asn = new Assign();
-  $asn->rid = $_POST['rid'];
-  $asn->hours = $_POST['hours'];
-  $asn->cost = str_replace('$', '', $_POST['cost']);
-  $asn->complete = parse_date($_POST);
-  $asn->aid = $aid;
-  $asn->insert();
-
-  header('Location: index.php');
-}
-// Initialize values!
-$name = '';
-$phone = '';
-$year = '';
-$month = '';
-$day = '';
-$desc = '';
-$est_hours = '';
-$act_hours = '';
-$est_cost = '';
-$act_cost = '';
-$checked = '';
-$id = (isset($_GET['id'])) ? $_GET['id'] : null;
-$row_size = 1;
-if (strlen($id)) {
-  // Get request information
-  $job = new Jobs();
-  $job->get($id);
-  $user = new Users();
-  $name = $user->user_name($job->userId);
-  $phone = parse_phone($job->contactNumber);
-  $assigned_to = $user->user_name($job->assignedUserId);
-  $assigned_to = "<option>$assigned_to</option>";
-  $y = substr($job->dueDate, 0, 4);
-  $m = substr($job->dueDate, 5, 2);
-  $d = substr($job->dueDate, 8, 2);
-  $time = strtotime("$y/$m/$d");
-  $year = '<option>'.date('Y', $time).'</option>';
-  $month = '<option>'.date('F', $time).'</option>';
-  $day = '<option>'.date('j', $time).'</option>';
-  $desc = $job->description;
-  $status = $job->status;
-  // Get estimate information
-  $est_hours = $job->hoursEstimate;
-  $est_cost = $job->costEstimate;
-  // Get actual spending information
-  $rec = new Records();
-  $rec->jobId = $job->jobId;
-  $rec->find(false);
-  // Sum spending information together
-  while ($rec->rows()) {
-    $act_hours += $rec->hours;
-    $act_cost += $rec->cost;
+  // Initialize values!
+  $name = '';
+  $phone = '';
+  $year = '';
+  $month = '';
+  $day = '';
+  $desc = '';
+  $est_hours = '';
+  $act_hours = '';
+  $est_cost = '';
+  $act_cost = '';
+  $checked = '';
+  $id = (isset($_GET['id'])) ? $_GET['id'] : null;
+  $row_size = 1;
+  if (strlen($id)) {
+    // Get request information
+    $job = new Jobs();
+    $job->get($id);
+    $user = new Users();
+    $name = $user->user_name($job->userId);
+    $phone = parse_phone($job->contactNumber);
+    $assigned_to = $user->user_name($job->assignedUserId);
+    $assigned_to = "<option>$assigned_to</option>";
+    $y = substr($job->dueDate, 0, 4);
+    $m = substr($job->dueDate, 5, 2);
+    $d = substr($job->dueDate, 8, 2);
+    $time = strtotime("$y/$m/$d");
+    $year = '<option>'.date('Y', $time).'</option>';
+    $month = '<option>'.date('F', $time).'</option>';
+    $day = '<option>'.date('j', $time).'</option>';
+    $desc = $job->description;
+    $status = $job->status;
+    // Get estimate information
+    $est_hours = $job->hoursEstimate;
+    $est_cost = $job->costEstimate;
+    // Get actual spending information
+    $rec = new Records();
+    $rec->jobId = $job->jobId;
+    $rec->find(false);
+    // Sum spending information together
+    while ($rec->rows()) {
+      $act_hours += $rec->hours;
+      $act_cost += $rec->cost;
+    }
+    $row_size = 1 + strlen($desc) / 40;
   }
-  $row_size = 1 + strlen($desc) / 40;
-}
-$options = array('view' => true, 'edit' => false, 'pending' => false);
+  $options = array('view' => true, 'edit' => false, 'pending' => false);
 ?>
 <!DOCTYPE html>
 <head>
