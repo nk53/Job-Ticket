@@ -70,8 +70,9 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
     $materials = $job->materials;
     $row_size = 1 + strlen($description) / 40;
   }
+  $disabled = (!strlen($id) && !strlen($rid)) ? ' disabled' : '';
   if (!$date) {
-    $date = date_option(date('Y-m-d'));
+    $date = date_option(date('Y-m-d'), $disabled);
   }
 
 ?>
@@ -111,9 +112,9 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
           <td><textarea rows="<?php echo $row_size ?>" cols="40" disabled><?php echo $description ?></textarea></td>
         </tr>
         <tr><td>Date:</td><td><?php echo $date ?></td></tr>
-        <tr><td>Number of hours:</td><td><input name="hours" id="hours" type="text" value="<?php echo $hours ?>"/></td></tr>
-        <tr><td>Materials used:</td><td><textarea name="materials" id="materials" rows="3" cols="40"><?php echo $materials ?></textarea></td></tr>
-        <tr><td>Cost of materials:</td><td><input name="cost" id="cost" type="text" value="<?php echo $cost ?>" /></td></tr>
+        <tr><td>Number of hours:</td><td><input name="hours" id="hours" type="text" value="<?php echo $hours ?>"<?php echo $disabled ?> /></td></tr>
+        <tr><td>Materials used:</td><td><textarea name="materials" id="materials" rows="3" cols="40"<?php echo $disabled ?>><?php echo $materials ?></textarea></td></tr>
+        <tr><td>Cost of materials:</td><td><input name="cost" id="cost" type="text" value="<?php echo $cost ?>"<?php echo $disabled ?> /></td></tr>
       </table>
       <input type="submit" value="Submit" />
     </div>  
