@@ -119,14 +119,14 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
         </select>
         <select id="day" name="day"></select></td></tr>
         <tr><td>Number of hours:</td><td><input name="hours" id="hours" type="text" value="<?php echo $hours ?>"/></td></tr>
-        <tr><td>Materials used:</td><td><textarea name="materials" id="materials" rows="10" cols="40"><?php echo $materials ?></textarea></td></tr>
+        <tr><td>Materials used:</td><td><textarea name="materials" id="materials" rows="3" cols="40"><?php echo $materials ?></textarea></td></tr>
         <tr><td>Cost of materials:</td><td><input name="cost" id="cost" type="text" value="<?php echo $cost ?>" /></td></tr>
       </table>
       <input type="submit" value="Submit" />
     </div>  
   </form>
   <?php show_list('Records', $aid); ?>
-  <?php show_list('Jobs', $id); ?>
+  <?php show_list('Jobs', $id, array('assigned_to_user' => true)); ?>
 </body>
 </html>
 <?php } ?>
