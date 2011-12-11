@@ -239,7 +239,7 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit, $view) {
 <tr class='<?php echo $even_or_odd.$is_selected ?>'>
   <td><?php echo $do->jobId ?></td>
   <td><?php echo $user->fullName ?></td>
-  <td><?php echo parse_phone($user->phone) ?></td>
+  <td><?php echo parse_phone($do->contactNumber) ?></td>
   <td><?php echo $do->dueDate ?></td>
   <td><?php echo $description ?></td>
   <td><?php echo $approved ?></td>
