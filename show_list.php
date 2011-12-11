@@ -60,9 +60,13 @@ function show_list($list, $id, $options=array()) {
       $do->userId = $_COOKIE['uid'];
       $do->limit(10);
       $do->order_by('jobId DESC');
+    } else if ($options['assigned_to_user']) {
+      $do->assignedUserId = $_COOKIE['uid'];
     } else {
       $do->status = 0;
     }
+  } else if ($list == 'Records') {
+    $do->jobId = $id;
   }
   // Don't show pending in history screen
   if (is_null($options['pending']) || $options['pending']) {

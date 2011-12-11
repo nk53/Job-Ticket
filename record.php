@@ -32,7 +32,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
     }
   }
   // Initialize values!
-  $aid = (isset($_GET['aid'])) ? $_GET['aid'] : '';
+  $rid = (isset($_GET['rid'])) ? $_GET['rid'] : '';
   $id = (isset($_GET['id'])) ? $_GET['id'] : '';
   $requestor = '';
   $requestor_phone = '';
@@ -42,7 +42,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
   $materials = '';
   $cost = '';
   $row_size = '1';
-  if (strlen($aid)) {
+  if (strlen($rid)) {
     $job = new Jobs();
     $job->get($aid);
     $user = new Users();
@@ -59,9 +59,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
     $requestor_phone = parse_phone($job->contactNumber);
     $deadline = $job->dueDate;
     $description = $job->description;
-    $hours = $job->hoursEstimate;
     $materials = $job->materials;
-    $cost = '$'.$job->costEstimate;
     $row_size = 1 + strlen($description) / 40;
   }
 
@@ -82,7 +80,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
   <h1>Job Record Form</h1>
   <form id="form" method="post" action="record.php">
     <div class="form">
-      <input type="hidden" id="aid" name="aid" value="<?php echo $aid ?>" />
+      <input type="hidden" id="rid" name="rid" value="<?php echo $rid ?>" />
       <input type="hidden" id="id" name="id" value="<?php echo $id ?>" />
       <table border="0">
         <tr>
@@ -125,7 +123,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
       <input type="submit" value="Submit" />
     </div>  
   </form>
-  <?php show_list('Records', $aid); ?>
+  <?php show_list('Records', $id); ?>
   <?php show_list('Jobs', $id, array('assigned_to_user' => true)); ?>
 </body>
 </html>
