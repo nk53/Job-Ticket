@@ -1,5 +1,6 @@
 <?php
 require_once('Jobs.php');
+require_once('Records.php');
 require_once('Users.php');
 require_once('check_cookie.php');
 require_once('show_list.php');
@@ -13,7 +14,15 @@ if (check_cookie($_SERVER['PHP_SELF'], 1)) {
     $job = new Jobs();
     $job->insert_job($_POST);
   }
-  $options = array('edit' => false, 'limit_to_user' => true);
+  $rec = new Records();
+  $actual = $rec->get_actual($job->jobId);
+  $act_hours = $actual['hours'];
+  $act_cost = $actual['cost'];
+  $options = array(
+    'show_spending' => true,
+    'edit' => false,
+    'limit_to_user' => true
+  );
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

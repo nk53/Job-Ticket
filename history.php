@@ -43,13 +43,9 @@ if (check_cookie($_SERVER['PHP_SELF'], 3)) {
     $est_cost = $job->costEstimate;
     // Get actual spending information
     $rec = new Records();
-    $rec->jobId = $job->jobId;
-    $rec->find(false);
-    // Sum spending information together
-    while ($rec->rows()) {
-      $act_hours += $rec->hours;
-      $act_cost += $rec->cost;
-    }
+    $actual = $rec->get_actual($job->jobId);
+    $act_hours = $actual['hours'];
+    $act_cost = $actual['cost'];
     $row_size = 1 + strlen($desc) / 40;
   }
   $options = array('view' => true, 'edit' => false, 'pending' => false);

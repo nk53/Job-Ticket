@@ -76,7 +76,7 @@ function show_list($list, $id, $options=array()) {
     // We are on the history screen
     $do->query('SELECT * FROM Jobs WHERE status != 0 OR completed = 1', false);
   }
-  show_header($list, $edit, $view);
+  show_header($list, $edit, $view, $options);
   
   // If this is the records form and no job has been selected,
   // don't only show the records table header
@@ -85,7 +85,7 @@ function show_list($list, $id, $options=array()) {
     for ($i=0; $do->rows(); $i++) {
       $is_selected = ($do->$p_key == $id) ? ' selected' : '';
       $id_list[] = $do->$p_key;
-      echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit, $view);
+      echo_row($list, $do, ($i%2 == 0) ? 'even' : 'odd', $is_selected, $edit, $view, $options);
     }
     
     // Set $prev and $next
@@ -104,7 +104,7 @@ function show_list($list, $id, $options=array()) {
 }
 
 // Function start: show_header, hides edit/view column if $edit is false
-function show_header($list, $edit, $view) { ?>
+function show_header($list, $edit, $view, $options) { ?>
 <div class="list">
 <table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
@@ -147,6 +147,10 @@ function show_header($list, $edit, $view) { ?>
 <?php if ($view): ?>
   <th>View</th>
 <?php endif; ?>
+<?php if (!is_null($options['show_spending']) && $options['show_spending']): ?>
+  <th>Hours Spent</th>
+  <th>Money Spent</th>
+<?php endif; ?>
 </tr>
 <?php } else if ($list == 'Records') { ?>
 <tr>
@@ -163,7 +167,7 @@ function show_header($list, $edit, $view) { ?>
 }
 // Function end: show_header
 
-function echo_row($list, $do, $even_or_odd, $is_selected, $edit, $view) {
+function echo_row($list, $do, $even_or_odd, $is_selected, $edit, $view, $options) {
   if ($list == 'assign') {
     // Get fullname of requestor
     $req = new Jobs();
@@ -223,6 +227,15 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit, $view) {
     "</td>";
       
   } else if ($list == 'Jobs') {
+    $actual = array();
+    $hours = '';
+    $cost = '';
+    if ($options['show_spending']) {
+      $rec = new Records();
+      $actual = $rec->get_actual($do->jobId);
+      $hours = $actual['hours'];
+      $cost = $actual['cost'];
+    }
     $a = "<a href='{$_SERVER['PHP_SELF']}?id={$do->jobId}'>";
     if ($edit) {
       $a .= 'Edit</a>';
@@ -249,6 +262,10 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit, $view) {
   <td><?php echo $approved ?></td>
 <?php if ($edit || $view): ?>
   <td><?php echo $a ?></td>
+<?php endif; ?>
+<?php if ($options['show_spending']): ?>
+  <td><?php echo $hours ?></td>
+  <td><?php echo $cost ?></td>
 <?php endif; ?>
 </tr>
 <?
