@@ -43,7 +43,7 @@ require_once('Workers.php');
  *   Defaults to true. Use false if you don't want to show the last
  *   column (called 'edit' or 'view').
  */
-function show_list($list, $id, $limit_to_user=null, $edit=true) {
+function show_list($list, $id, $options) {
   $prev = '';
   $next = '';
   $id_list = array();
@@ -257,23 +257,24 @@ function parse_date($d) {
  * @param d
  *   The YYYY-MM-DD date string.
  */
-function date_option($d) {
+function date_option($d, $disabled=false) {
+  $disabled = ($disabled) ? ' disabled' : '';
   $year = substr($d, 0, 4);
   $month = substr($d, 5, 2);
   $day = substr($d, 8, 2);
-  $select = '<select id="year" name="year">';
+  $select = "<select id='year' name='year'$disabled>";
   // Construct the year options
   for ($i=0; $i<5; $i++) {
     $select .= '<option value="'.($year+$i).'">'.($year+$i).'</option>';
   }
-  $select .= '</select><select id="month" name="month">';
+  $select .= "</select><select id='month' name='month'$disabled>";
   // Construct month options
   for ($i=1; $i<13; $i++) {
     $month_name = date('F', strtotime("$year-$i-$day"));
     $selected = ($month*1 == $i) ? 'selected="selected"' : '' ;
     $select .= "<option id='month_$i' $selected value='$month_name'>$month_name</option>";
   }
-  $select .= '</select><select id="day" name="day">';
+  $select .= "</select><select id='day' name='day'$disabled>";
   // Construct day options
   $days_in_month = date('t', strtotime($d));
   for ($i=1; $i<=$days_in_month; $i++) {
