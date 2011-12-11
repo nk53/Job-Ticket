@@ -135,6 +135,7 @@ function show_header($list, $edit) { ?>
   <th>Hours Worked</th>
   <th>Material Cost</th>
   <th>Date Completed</th>
+  <th>Materials Used</th>
   <th>Edit</th>
 </tr>
 <?php }
@@ -181,10 +182,10 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
       "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>View</a></td>" .
     "</tr>";
   } else if ($list == 'Records') {
-    if (strlen($do->materials) > 23) {
-      $materials = substr($do->materials, 0, 20)."...";
+    if (strlen($do->materialsUsed) > 23) {
+      $materials = substr($do->materialsUsed, 0, 20)."...";
     } else {
-      $materials = $do->materials;
+      $materials = $do->materialsUsed;
     }
     // Get fullname of User
     $user = new Users();
@@ -192,13 +193,12 @@ function echo_row($list, $do, $even_or_odd, $is_selected, $edit) {
     $user->find();
     $assigned_to = $user->fullname;
     echo "<tr class='$even_or_odd$is_selected'>" .
-      "<td>{$do->id}</td>" .
-      "<td>{$do->aid}</td>" .
-      "<td>$assigned_to</td>" .
-      "<td>{$do->date}</td>" .
-      "<td>{$do->hours}</td>" .
+      "<td>{$do->recordId}</td>" .
+      "<td>{$do->jobId}</td>" .
+      "<td>{$do->hoursWorked}</td>" .
+      "<td>\${$do->materialCost}</td>" .
+      "<td>{$do->dateCompleted}</td>" .
       "<td>$materials</td>" .
-      "<td>\${$do->cost}</td>" .
       "<td><a href='{$_SERVER['PHP_SELF']}?id={$do->id}'>Edit</a></td>" .
     "</td>";
       
