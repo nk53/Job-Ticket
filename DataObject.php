@@ -178,7 +178,9 @@ class DataObject {
   }
   
   public function rows() {
-    $row = mysql_fetch_assoc($this->get_result());
+    if (!is_null($this->get_result())) {
+      $row = mysql_fetch_assoc($this->get_result());
+    }
     if ($row) {
       $this->set_vals($row);
     }
