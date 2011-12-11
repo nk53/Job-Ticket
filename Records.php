@@ -22,12 +22,28 @@ class Records extends DataObject {
   public $materialCost;
   public $dateCompleted;
   
+  public function insert_record($post) {
+    $completed = (isset($post['completed'])) ? 1 : 0;
+    $args = array(
+      $post['id'],
+      $post['hours'],
+      str_replace('$', '', $post['cost']),
+      $post['materials'],
+      parse_date($post),
+      $completed,
+    );
+    $this->call_procedure('insert_record', $args);
+  }
+  
   public function update_record($post) {
+    $completed = (isset($post['completed'])) ? 1 : 0;
     $args = array(
       $post['rid'],
-      $post['hoursEstimated'],
-      $post['costEstimated'],
+      $post['hours'],
+      str_replace('$', '', $post['cost']),
+      $post['materials'],
       parse_date($post),
+      $completed
     );
     $this->call_procedure('update_record', $args);
   }

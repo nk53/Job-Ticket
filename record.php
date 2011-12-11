@@ -5,30 +5,14 @@ require_once('Records.php');
 require_once('Jobs.php');
 require_once('Users.php');
 if (check_cookie($_SERVER['PHP_SELF'], 2)) {
-  if (!empty($_POST)) {
-    if (!empty($_POST['rid'])) {
-      $asn = new Assign();
-      $asn->id = $_POST['rid'];
-      $asn->find();
-      $rec = new Record();
-      $rec->aid = $_POST['rid'];
-      $rec->uid = $asn->rid;
-      $rec->date = parse_date($_POST);
-      $rec->hours = $_POST['hours'];
-      $rec->materials = $_POST['materials'];
-      $rec->cost = str_replace('$', '', $_POST['cost']);
-      $rec->insert();
-    } else if (!empty($_POST['id'])) {
-      $rec = new Record();
-      $date = parse_date($_POST);
-      $cost = str_replace('$', '', $_POST['cost']);
-      $query = 'UPDATE record ' . 
-               "SET date='$date', " .
-               "hours={$_POST['hours']}, " .
-               "materials='{$_POST['materials']}', " .
-               "cost=$cost " .
-               "WHERE id={$_POST['id']}";
-      $rec->query($query);
+  print_r($_POST);
+  if (strlen($_POST)) {
+    if (strlen($_POST['rid'])) {
+      $rec = new Records();
+      $rec->update_record($_POST);
+    } else if (strlen($_POST['id'])) {
+      $rec = new Records();
+      $rec->insert_record($_POST);
     }
   }
   // Initialize values!
@@ -130,7 +114,7 @@ if (check_cookie($_SERVER['PHP_SELF'], 2)) {
         </tr>
         <tr>
           <td>Completed:</td>
-          <td><input type="checkbox"<?php echo $completed ?> /></td>
+          <td><input name="completed" type="checkbox"<?php echo $completed ?> /></td>
         </tr>
       </table>
       <input type="submit" value="Submit" />

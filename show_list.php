@@ -20,7 +20,6 @@ define('NO_EDIT', false);
 
 require_once('Jobs.php');
 require_once('Records.php');
-require_once('Record.php');
 require_once('Users.php');
 require_once('Workers.php');
 
@@ -63,6 +62,7 @@ function show_list($list, $id, $options=array()) {
     } else if ($options['assigned_to_user']) {
       $do->completed = 0;
       $do->assignedUserId = $_COOKIE['uid'];
+      $do->status = 1;
     } else {
       $do->status = 0;
     }
