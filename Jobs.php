@@ -8,6 +8,7 @@ class Jobs extends DataObject {
   protected $fields = array(
     'jobId' => 'int',
     'userId' => 'int',
+    'assignedUserId' => 'int',
     'description' => 'text',
     'dueDate' => 'date',
     'status' => 'tinyint',
@@ -23,6 +24,7 @@ class Jobs extends DataObject {
   
   public $jobId;
   public $userId;
+  public $assignedUserId;
   public $description;
   public $dueDate;
   public $status;
@@ -56,20 +58,25 @@ class Jobs extends DataObject {
   }
   
   /**
-   * Takes $_POST and updates it into the Jobs table
+   * Takes $_POST and job $id and updates it into the Jobs table.
+   * This is meant to be submitted from the approval form
    */
-  public function update_job($post, $id) {
+  public function update_job_approval($post) {
+    $job = new Jobs();
+    $job->get($post['rid']);
+    
+    $dateEstimated = parse_date($post);
     $args = array(
-      $id,
-      $post['description'],
-      $post['dueDate'],
-      $post['contactNumber'],
+      $post['rid'],
+      $job->description,
+      $job->dueDate,
+      $job->contactNumber,
       $post['assignedUserId'],
       $post['status'],
       $post['costEstimated'],
       $post['hoursEstimated'],
-      $post['dateEstimated'],
-      $post['completed'],
+      $dateEstimated,
+      $job->completed,
     );
     $this->call_procedure('update_job', $args);
   }
