@@ -65,7 +65,7 @@ class Jobs extends DataObject {
   public function update_job_approval($post) {
     $job = new Jobs();
     $job->get($post['rid']);
-    
+    $cost = str_replace('$', '', $post['costEstimated']);
     $dateEstimated = parse_date($post);
     $args = array(
       $post['rid'],
@@ -74,7 +74,7 @@ class Jobs extends DataObject {
       $job->contactNumber,
       $post['assignedUserId'],
       $post['status'],
-      $post['costEstimated'],
+      $cost,
       $post['hoursEstimated'],
       $dateEstimated,
       $job->completed,
